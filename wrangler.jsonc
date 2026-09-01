@@ -1,0 +1,20 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "werent-fleet-manager",
+	"compatibility_date": "2026-09-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true
+	},
+	"routes": [
+		{ "pattern": "www.werentsrl.com/*", "zone_name": "werentsrl.com" },
+		{ "pattern": "werentsrl.com/*", "zone_name": "werentsrl.com" }
+	],
+	"workers_dev": true,
+	"preview_urls": true,
+	"keep_vars": true,
+	"vars": {
+		"SUPABASE_URL": "https://yjirojfrrxukhioxgxhq.supabase.co",
+		"SUPABASE_PUBLISHABLE_KEY": "sb_publishable_2Y5IcIjeRA45TYzac2f6Vw_9fu3XFmY"
+	}
+}

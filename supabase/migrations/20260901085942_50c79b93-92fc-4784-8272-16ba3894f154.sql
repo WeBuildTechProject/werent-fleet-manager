@@ -1,0 +1,1 @@
+ALTER TABLE public.reservations ADD COLUMN IF NOT EXISTS checkin_equipment text[] NOT NULL DEFAULT '{}'::text[];

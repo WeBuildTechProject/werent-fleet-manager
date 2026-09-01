@@ -1,0 +1,9 @@
+CREATE INDEX IF NOT EXISTS idx_reservations_code_lower ON public.reservations (lower(code));
+CREATE INDEX IF NOT EXISTS idx_reservations_customer_email_lower ON public.reservations (lower(customer_email));
+CREATE INDEX IF NOT EXISTS idx_reservations_customer_name_lower ON public.reservations (lower(customer_name));
+CREATE INDEX IF NOT EXISTS idx_vehicles_plate_lower ON public.vehicles (lower(plate));
+CREATE INDEX IF NOT EXISTS idx_vehicles_model_lower ON public.vehicles (lower(model));
+CREATE INDEX IF NOT EXISTS idx_customers_email_lower ON public.customers (lower(email));
+CREATE INDEX IF NOT EXISTS idx_customers_full_name_lower ON public.customers (lower(full_name));
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON public.customers (phone);
+CREATE INDEX IF NOT EXISTS idx_customers_fiscal_code_lower ON public.customers (lower(fiscal_code));
