@@ -1,14 +1,39 @@
-import aygo from "@/assets/car-aygo.jpg.asset.json";
-import panda from "@/assets/car-panda.jpg.asset.json";
-import c3 from "@/assets/car-c3.jpg.asset.json";
-import bmwX4 from "@/assets/car-bmw-x4.jpg.asset.json";
-import alfaJunior from "@/assets/car-alfa-junior.jpg.asset.json";
-import spacetourer from "@/assets/car-spacetourer.jpg.asset.json";
-import ducato from "@/assets/car-ducato.jpg.asset.json";
-import transit from "@/assets/car-transit.jpg.asset.json";
-import hero from "@/assets/hero-car.jpg.asset.json";
+import aygo from "@/assets/car-aygo.jpg";
+import aygo480 from "@/assets/car-aygo-480w.jpg";
+import aygo960 from "@/assets/car-aygo-960w.jpg";
+import panda from "@/assets/car-panda.jpg";
+import panda480 from "@/assets/car-panda-480w.jpg";
+import panda960 from "@/assets/car-panda-960w.jpg";
+import c3 from "@/assets/car-c3.jpg";
+import c3_480 from "@/assets/car-c3-480w.jpg";
+import c3_960 from "@/assets/car-c3-960w.jpg";
+import bmwX4 from "@/assets/car-bmw-x4.jpg";
+import bmwX4_480 from "@/assets/car-bmw-x4-480w.jpg";
+import bmwX4_960 from "@/assets/car-bmw-x4-960w.jpg";
+import alfaJunior from "@/assets/car-alfa-junior.jpg";
+import alfaJunior480 from "@/assets/car-alfa-junior-480w.jpg";
+import alfaJunior960 from "@/assets/car-alfa-junior-960w.jpg";
+import spacetourer from "@/assets/car-spacetourer.jpg";
+import spacetourer480 from "@/assets/car-spacetourer-480w.jpg";
+import spacetourer960 from "@/assets/car-spacetourer-960w.jpg";
+import ducato from "@/assets/car-ducato.jpg";
+import ducato480 from "@/assets/car-ducato-480w.jpg";
+import ducato960 from "@/assets/car-ducato-960w.jpg";
+import transit from "@/assets/car-transit.jpg";
+import transit480 from "@/assets/car-transit-480w.jpg";
+import transit960 from "@/assets/car-transit-960w.jpg";
+import hero from "@/assets/hero-car.jpg";
+import hero640 from "@/assets/hero-car-640w.jpg";
+import hero1200 from "@/assets/hero-car-1200w.jpg";
 
-export const heroImage = hero.url;
+export const heroImage = hero;
+/** srcset completo per l'immagine hero (usato con l'attributo HTML srcSet). */
+export const heroImageSrcSet = `${hero640} 640w, ${hero1200} 1200w, ${hero} 1920w`;
+
+/** Costruisce la stringa srcset "url 480w, url 960w, url-originale 1536w" per le foto veicoli. */
+function vehicleSrcSet(w480: string, w960: string, full: string): string {
+  return `${w480} 480w, ${w960} 960w, ${full} 1536w`;
+}
 
 export type CategoryId = "economy" | "premium" | "van" | "business";
 
@@ -17,6 +42,7 @@ export type Vehicle = {
   model: string;
   category: CategoryId;
   image: string;
+  imageSrcSet: string;
   seats: number;
   doors: number;
   luggage: number;
@@ -33,6 +59,7 @@ export const categories: {
   tagline: { it: string; en: string };
   description: { it: string; en: string };
   image: string;
+  imageSrcSet: string;
   fromPrice: number;
   models: string[];
   searchTab: "auto" | "van" | "business";
@@ -45,7 +72,8 @@ export const categories: {
       it: "Compatta, agile e perfetta per la città come per la costa. Consumi ridotti e parcheggio facile.",
       en: "Compact, agile and perfect both in town and along the coast. Low running costs, easy parking.",
     },
-    image: aygo.url,
+    image: aygo,
+    imageSrcSet: vehicleSrcSet(aygo480, aygo960, aygo),
     fromPrice: 29,
     models: ["Toyota Aygo X", "Fiat Panda", "Citroën C3"],
     searchTab: "auto",
@@ -58,7 +86,8 @@ export const categories: {
       it: "SUV e crossover di gamma alta per viaggi di lavoro e piacere, con dotazioni complete e cambio automatico.",
       en: "High-end SUVs and crossovers for business and leisure, fully equipped and automatic.",
     },
-    image: bmwX4.url,
+    image: bmwX4,
+    imageSrcSet: vehicleSrcSet(bmwX4_480, bmwX4_960, bmwX4),
     fromPrice: 79,
     models: ["BMW X4", "Alfa Romeo Junior", "Audi Q3"],
     searchTab: "auto",
@@ -71,7 +100,8 @@ export const categories: {
       it: "Van passeggeri fino a 9 posti: ideali per gruppi, team in trasferta e transfer aeroportuali.",
       en: "Passenger vans up to 9 seats: ideal for groups, travelling teams and airport transfers.",
     },
-    image: spacetourer.url,
+    image: spacetourer,
+    imageSrcSet: vehicleSrcSet(spacetourer480, spacetourer960, spacetourer),
     fromPrice: 89,
     models: ["Citroën SpaceTourer", "Peugeot Traveller", "Ford Tourneo"],
     searchTab: "van",
@@ -84,7 +114,8 @@ export const categories: {
       it: "Furgoni cargo fino a 15 m³ per logistica, cantieri e traslochi, disponibili anche per il lungo periodo.",
       en: "Cargo vans up to 15 m³ for logistics, construction sites and moving, also on long-term rental.",
     },
-    image: ducato.url,
+    image: ducato,
+    imageSrcSet: vehicleSrcSet(ducato480, ducato960, ducato),
     fromPrice: 69,
     models: ["Fiat Ducato", "Ford Transit", "Peugeot Boxer"],
     searchTab: "business",
@@ -96,7 +127,8 @@ export const vehicles: Vehicle[] = [
     id: "aygo-x",
     model: "Toyota Aygo X",
     category: "economy",
-    image: aygo.url,
+    image: aygo,
+    imageSrcSet: vehicleSrcSet(aygo480, aygo960, aygo),
     seats: 4,
     doors: 5,
     luggage: 1,
@@ -110,7 +142,8 @@ export const vehicles: Vehicle[] = [
     id: "panda",
     model: "Fiat Panda",
     category: "economy",
-    image: panda.url,
+    image: panda,
+    imageSrcSet: vehicleSrcSet(panda480, panda960, panda),
     seats: 5,
     doors: 5,
     luggage: 1,
@@ -124,7 +157,8 @@ export const vehicles: Vehicle[] = [
     id: "c3",
     model: "Citroën C3",
     category: "economy",
-    image: c3.url,
+    image: c3,
+    imageSrcSet: vehicleSrcSet(c3_480, c3_960, c3),
     seats: 5,
     doors: 5,
     luggage: 2,
@@ -138,7 +172,8 @@ export const vehicles: Vehicle[] = [
     id: "alfa-junior",
     model: "Alfa Romeo Junior",
     category: "premium",
-    image: alfaJunior.url,
+    image: alfaJunior,
+    imageSrcSet: vehicleSrcSet(alfaJunior480, alfaJunior960, alfaJunior),
     seats: 5,
     doors: 5,
     luggage: 2,
@@ -152,7 +187,8 @@ export const vehicles: Vehicle[] = [
     id: "bmw-x4",
     model: "BMW X4",
     category: "premium",
-    image: bmwX4.url,
+    image: bmwX4,
+    imageSrcSet: vehicleSrcSet(bmwX4_480, bmwX4_960, bmwX4),
     seats: 5,
     doors: 5,
     luggage: 3,
@@ -166,7 +202,8 @@ export const vehicles: Vehicle[] = [
     id: "spacetourer",
     model: "Citroën SpaceTourer 9 posti",
     category: "van",
-    image: spacetourer.url,
+    image: spacetourer,
+    imageSrcSet: vehicleSrcSet(spacetourer480, spacetourer960, spacetourer),
     seats: 9,
     doors: 5,
     luggage: 5,
@@ -180,7 +217,8 @@ export const vehicles: Vehicle[] = [
     id: "ducato",
     model: "Fiat Ducato 12 m³",
     category: "business",
-    image: ducato.url,
+    image: ducato,
+    imageSrcSet: vehicleSrcSet(ducato480, ducato960, ducato),
     seats: 3,
     doors: 4,
     luggage: 0,
@@ -194,7 +232,8 @@ export const vehicles: Vehicle[] = [
     id: "transit",
     model: "Ford Transit 15 m³",
     category: "business",
-    image: transit.url,
+    image: transit,
+    imageSrcSet: vehicleSrcSet(transit480, transit960, transit),
     seats: 3,
     doors: 4,
     luggage: 0,

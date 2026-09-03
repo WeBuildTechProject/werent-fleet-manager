@@ -2,14 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Briefcase, ShieldCheck, Sparkles, Truck } from "lucide-react";
 
 import { Reveal } from "@/components/reveal";
-import { categories, heroImage } from "@/lib/fleet";
+import { categories, heroImage, heroImageSrcSet } from "@/lib/fleet";
 import { useI18n } from "@/lib/i18n";
 import { PUBLIC_SITE_ONLY } from "@/lib/site-mode";
 import { cn } from "@/lib/utils";
 
 const vanImage = categories.find((c) => c.id === "van")?.image ?? heroImage;
+const vanImageSrcSet = categories.find((c) => c.id === "van")?.imageSrcSet ?? heroImageSrcSet;
 const premiumImage = categories.find((c) => c.id === "premium")?.image ?? heroImage;
+const premiumImageSrcSet = categories.find((c) => c.id === "premium")?.imageSrcSet ?? heroImageSrcSet;
 const businessImage = categories.find((c) => c.id === "business")?.image ?? heroImage;
+const businessImageSrcSet = categories.find((c) => c.id === "business")?.imageSrcSet ?? heroImageSrcSet;
 
 /**
  * Fasce promozionali a piena larghezza: ogni card è interamente cliccabile e
@@ -30,7 +33,7 @@ export function PromoBands() {
       ),
       cta: t("Aggiungi al tuo noleggio", "Add to your rental"),
       image: heroImage,
-      tone: "light" as const,
+      imageSrcSet: heroImageSrcSet,
       link: { to: "/prenota", search: { insurance: "estesa" } },
     },
     {
@@ -44,7 +47,7 @@ export function PromoBands() {
       ),
       cta: t("Scopri il programma fedeltà", "Discover the loyalty programme"),
       image: premiumImage,
-      tone: "dark" as const,
+      imageSrcSet: premiumImageSrcSet,
       link: { to: "/area-clienti/accedi", search: undefined },
     },
     {
@@ -58,7 +61,7 @@ export function PromoBands() {
       ),
       cta: t("Richiedi una convenzione", "Request an agreement"),
       image: businessImage,
-      tone: "light" as const,
+      imageSrcSet: businessImageSrcSet,
       link: { to: "/business", search: undefined },
     },
     {
@@ -72,7 +75,7 @@ export function PromoBands() {
       ),
       cta: t("Vedi la flotta Van", "See the van fleet"),
       image: vanImage,
-      tone: "dark" as const,
+      imageSrcSet: vanImageSrcSet,
       link: { to: "/flotta", search: { class: "van" } },
     },
   ];
@@ -88,74 +91,82 @@ export function PromoBands() {
       </h2>
 
       <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        {bands.map((band, i) => (
-          <Reveal key={band.key} delay={i * 80}>
-            <Link
-              to={band.link.to}
-              search={band.link.search as never}
-              className={cn(
-                "group relative flex h-full min-h-56 flex-col justify-end overflow-hidden rounded-3xl border p-7 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-elev",
-                band.tone === "dark"
-                  ? "border-ink/20 bg-ink text-ink-foreground"
-                  : "border-border bg-secondary",
-              )}
-            >
-              <img
-                src={band.image}
-                alt=""
-                aria-hidden
-                loading="lazy"
+        {bands.map((band, i) => {
+          // Alternanza chiara/scura calcolata sulla posizione dopo il filtro
+          // (non su un tono fisso per card): resta corretta indipendentemente
+          // da quali card sono nascoste da PUBLIC_SITE_ONLY.
+          const tone: "light" | "dark" = i % 2 === 0 ? "light" : "dark";
+          return (
+            <Reveal key={band.key} delay={i * 80}>
+              <Link
+                to={band.link.to}
+                search={band.link.search as never}
                 className={cn(
-                  "absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105",
-                  band.tone === "dark" ? "opacity-35" : "opacity-25",
+                  "group relative flex h-full min-h-56 flex-col justify-end overflow-hidden rounded-3xl border p-7 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-elev",
+                  tone === "dark"
+                    ? "border-ink/20 bg-ink text-ink-foreground"
+                    : "border-border bg-secondary",
                 )}
-              />
-              <div
-                className={cn(
-                  "absolute inset-0",
-                  band.tone === "dark"
-                    ? "bg-gradient-to-tr from-ink via-ink/85 to-ink/40"
-                    : "bg-gradient-to-tr from-secondary via-secondary/90 to-secondary/40",
-                )}
-                aria-hidden
-              />
+              >
+                <img
+                  src={band.image}
+                  srcSet={band.imageSrcSet}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className={cn(
+                    "absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105",
+                    tone === "dark" ? "opacity-35" : "opacity-25",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "absolute inset-0",
+                    tone === "dark"
+                      ? "bg-gradient-to-tr from-ink via-ink/85 to-ink/40"
+                      : "bg-gradient-to-tr from-secondary via-secondary/90 to-secondary/40",
+                  )}
+                  aria-hidden
+                />
 
-              <div className="relative">
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-widest",
-                    band.tone === "dark"
-                      ? "bg-primary-soft/20 text-primary-soft"
-                      : "bg-primary text-primary-foreground",
-                  )}
-                >
-                  <band.icon className="size-3.5" aria-hidden />
-                  {band.badge}
-                </span>
-                <h3 className="mt-4 text-2xl font-black uppercase tracking-tight sm:text-3xl">
-                  {band.title}
-                </h3>
-                <p
-                  className={cn(
-                    "mt-2 max-w-md text-sm",
-                    band.tone === "dark" ? "text-ink-foreground/75" : "text-muted-foreground",
-                  )}
-                >
-                  {band.body}
-                </p>
-                <span
-                  className={cn(
-                    "mt-5 inline-flex items-center gap-2 text-sm font-bold",
-                    band.tone === "dark" ? "text-primary-soft" : "text-primary",
-                  )}
-                >
-                  {band.cta}
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
-                </span>
-              </div>
-            </Link>
-          </Reveal>
-        ))}
+                <div className="relative">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-widest",
+                      tone === "dark"
+                        ? "bg-primary-soft/20 text-primary-soft"
+                        : "bg-primary text-primary-foreground",
+                    )}
+                  >
+                    <band.icon className="size-3.5" aria-hidden />
+                    {band.badge}
+                  </span>
+                  <h3 className="mt-4 text-2xl font-black uppercase tracking-tight sm:text-3xl">
+                    {band.title}
+                  </h3>
+                  <p
+                    className={cn(
+                      "mt-2 max-w-md text-sm",
+                      tone === "dark" ? "text-ink-foreground/75" : "text-muted-foreground",
+                    )}
+                  >
+                    {band.body}
+                  </p>
+                  <span
+                    className={cn(
+                      "mt-5 inline-flex items-center gap-2 text-sm font-bold",
+                      tone === "dark" ? "text-primary-soft" : "text-primary",
+                    )}
+                  >
+                    {band.cta}
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
   );

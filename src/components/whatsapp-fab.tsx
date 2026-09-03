@@ -5,7 +5,11 @@ import { company } from "@/lib/company";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-const message = "Ciao, vorrei informazioni su un noleggio We Rent";
+// Messaggio già completo così com'è: il cliente deve poterlo inviare senza
+// doverci scrivere altro sopra (non un frammento tipo "vorrei informazioni",
+// che lo obbligherebbe ad aggiungere lui i dettagli prima di premere invia).
+const message =
+  "Ciao! Vorrei ricevere maggiori informazioni su disponibilità e tariffe per un noleggio auto con We Rent. Potete aiutarmi? Grazie!";
 
 export const whatsappHref = `https://wa.me/393892865597?text=${encodeURIComponent(message)}`;
 

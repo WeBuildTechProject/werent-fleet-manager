@@ -1,4 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Building2, Check, FileSignature, Headphones, Loader2, Phone, Receipt, Truck } from "lucide-react";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -27,7 +29,9 @@ export const Route = createFileRoute("/business")({
         property: "og:description",
         content: "We Rent è il partner di mobilità della tua impresa in Sardegna e a Milano.",
       },
+      { property: "og:url", content: absoluteUrl("/business") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/business") }],
   }),
   component: BusinessPage,
 });
@@ -153,6 +157,7 @@ function BusinessPage() {
 
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd([{ name: "Business", path: "/business" }])} />
       <section className="bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
           <p className="eyebrow text-ink/60">Business</p>

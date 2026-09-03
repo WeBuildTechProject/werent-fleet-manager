@@ -1,4 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 import { whatsappHref } from "@/components/whatsapp-fab";
@@ -11,18 +13,20 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/contatti")({
   head: () => ({
     meta: [
-      { title: "Contatti — parla con We Rent | Autonoleggio Sardegna" },
+      { title: "We Rent | Contatti e Sedi a Cagliari, Olbia e Milano" },
       {
         name: "description",
         content:
           "Telefono e WhatsApp +39 389 286 5597, email booking@werentsrl.com. Assistenza 24/7 su Cagliari, Olbia e Milano Linate.",
       },
-      { property: "og:title", content: "Contatti — parla con We Rent" },
+      { property: "og:title", content: "We Rent | Contatti e Sedi a Cagliari, Olbia e Milano" },
       {
         property: "og:description",
         content: "Chiamaci, scrivici su WhatsApp o via email: rispondiamo tutti i giorni.",
       },
+      { property: "og:url", content: absoluteUrl("/contatti") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/contatti") }],
   }),
   component: ContattiPage,
 });
@@ -56,6 +60,7 @@ function ContattiPage() {
 
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd([{ name: "Contatti", path: "/contatti" }])} />
       <section className="bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="eyebrow text-ink/60">{t("Contatti", "Contact")}</p>

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { absoluteUrl } from "@/lib/seo";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -72,7 +73,9 @@ export const Route = createFileRoute("/prenota")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: absoluteUrl("/prenota") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/prenota") }],
   }),
   // Fase provvisoria: swap a livello di config (non logica interna al
   // componente) per non introdurre violazioni dell'ordine degli hook e per
@@ -513,6 +516,8 @@ function PrenotaPage() {
                     <img
                       src={vehicleImage(v.model, v.macro_class)}
                       alt={v.model}
+                      width={1536}
+                      height={1024}
                       className="h-40 w-full object-cover"
                       loading="lazy"
                     />

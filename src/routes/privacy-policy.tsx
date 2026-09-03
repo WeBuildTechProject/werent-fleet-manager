@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { absoluteUrl } from "@/lib/seo";
 
 import { useI18n } from "@/lib/i18n";
 import { privacySections } from "@/lib/privacy";
@@ -15,7 +16,9 @@ export const Route = createFileRoute("/privacy-policy")({
       { property: "og:title", content: "Privacy Policy | We Rent S.r.l." },
       { property: "og:description", content: "Come We Rent tratta i dati personali dei clienti." },
       { name: "robots", content: "noindex" },
+      { property: "og:url", content: absoluteUrl("/privacy-policy") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/privacy-policy") }],
   }),
   component: PrivacyPage,
 });

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { absoluteUrl } from "@/lib/seo";
 
 import { LegalDocumentPage } from "@/components/legal/legal-document-page";
 
@@ -11,7 +12,9 @@ export const Route = createFileRoute("/condizioni-generali")({
       { property: "og:description", content: "Consulta le condizioni contrattuali applicabili al noleggio We Rent." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: absoluteUrl("/condizioni-generali") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/condizioni-generali") }],
   }),
   component: () => <LegalDocumentPage slug="condizioni-generali" eyebrow="Documento legale" title="Condizioni Generali di Noleggio" description="Il documento contrattuale che disciplina il rapporto di noleggio, dalla consegna alla riconsegna del veicolo." />,
 });

@@ -1,7 +1,10 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Briefcase, Check, DoorOpen, Fuel, Settings2, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { BookingClassTabs, RentHubEmbed } from "@/components/booking/renthub-embed";
 import { SearchWidget } from "@/components/search-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { categories, includedItems, vehicles, type CategoryId } from "@/lib/fleet";
 import { useI18n } from "@/lib/i18n";
+import { PUBLIC_SITE_ONLY } from "@/lib/site-mode";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/flotta")({
@@ -26,7 +30,9 @@ export const Route = createFileRoute("/flotta")({
         property: "og:description",
         content: "Tutti i veicoli sono nuovi, manutenuti e pronti al ritiro a Cagliari, Olbia e Milano Linate.",
       },
+      { property: "og:url", content: absoluteUrl("/flotta") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/flotta") }],
   }),
   // Deep-link dalle fasce promo: /flotta?class=van pre-filtra la categoria.
   validateSearch: (search: Record<string, unknown>): { class?: string } =>
@@ -80,6 +86,7 @@ function FlottaPage() {
 
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd([{ name: "Flotta", path: "/flotta" }])} />
       <section className="bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="eyebrow text-ink/60">{t("La flotta", "The fleet")}</p>
@@ -96,7 +103,14 @@ function FlottaPage() {
       </section>
 
       <section className="mx-auto -mt-8 max-w-7xl px-4 sm:px-6">
-        <SearchWidget variant="page" />
+        {PUBLIC_SITE_ONLY ? (
+          <>
+            <BookingClassTabs />
+            <RentHubEmbed compact frameId="renthub-frame-flotta" />
+          </>
+        ) : (
+          <SearchWidget variant="page" />
+        )}
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -212,7 +226,11 @@ function FlottaPage() {
                     <div className="aspect-[16/10] bg-muted">
                       <img
                         src={v.image}
+                        srcSet={v.imageSrcSet}
+                        sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 90vw"
                         alt={`${v.model} — ${t("noleggio", "rental")} We Rent`}
+                        width={1536}
+                        height={1024}
                         loading="lazy"
                         className="size-full object-cover"
                       />

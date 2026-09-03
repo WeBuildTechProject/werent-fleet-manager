@@ -11,14 +11,17 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { CookieBanner } from "@/components/cookie-banner";
+import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhatsappFab } from "@/components/whatsapp-fab";
 import { I18nProvider } from "@/lib/i18n";
+import { absoluteUrl, buildAutoRentalJsonLd, buildOrganizationJsonLd } from "@/lib/seo";
 import { ConsentProvider } from "@/lib/tracking";
 import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
+import ogDefaultImage from "../assets/og-default.jpg";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -86,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "We Rent — Autonoleggio in Sardegna e a Milano" },
+      { title: "We Rent | Noleggio Auto a Cagliari, Olbia e Milano Linate" },
       {
         name: "description",
         content:
@@ -95,12 +98,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "We Rent S.r.l." },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "We Rent" },
+      { property: "og:locale", content: "it_IT" },
+      { property: "og:image", content: absoluteUrl(ogDefaultImage) },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: absoluteUrl(ogDefaultImage) },
       { name: "theme-color", content: "#6f8f7d" },
+      { name: "apple-mobile-web-app-title", content: "We Rent" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -133,13 +143,21 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAdminArea = pathname.startsWith("/gestionale") || pathname.startsWith("/auth");
+  // Landing page Google Ads dedicate (/noleggio-*): usano il proprio chrome
+  // minimo (components/landing/landing-chrome.tsx) invece di header/footer/
+  // WhatsApp fab del sito principale, per restare focalizzate sulla
+  // conversione (niente distrazioni di navigazione, come da best practice PPC).
+  const isLandingPage = pathname.startsWith("/noleggio-");
 
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <ConsentProvider>
-          {isAdminArea ? (
-            // Area riservata: chrome pubblico nascosto, layout gestito da AdminShell.
+          {isAdminArea ? null : <JsonLd data={[buildOrganizationJsonLd(), ...buildAutoRentalJsonLd()]} />}
+          {isAdminArea || isLandingPage ? (
+            // Area riservata, o landing page Google Ads: chrome minimo/proprio,
+            // niente header/footer/nav del sito principale (vedi rispettivamente
+            // AdminShell e components/landing/landing-chrome.tsx).
             <Outlet />
           ) : (
             <div className="flex min-h-screen flex-col">
@@ -151,7 +169,7 @@ function RootComponent() {
               <SiteFooter />
             </div>
           )}
-          {isAdminArea ? null : <WhatsappFab />}
+          {isAdminArea || isLandingPage ? null : <WhatsappFab />}
           {isAdminArea ? null : <CookieBanner />}
           <Toaster />
         </ConsentProvider>

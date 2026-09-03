@@ -1,0 +1,21 @@
+# We Rent
+
+> We Rent S.r.l. è un'agenzia di autonoleggio con sedi a Cagliari Elmas, Olbia Costa Smeralda e Milano Linate. Noleggia auto economy e premium, van passeggeri fino a 9 posti e veicoli commerciali fino a 15 m³, con RCA, IVA e assistenza stradale 24/7 sempre incluse nel prezzo mostrato.
+
+We Rent fa parte del gruppo We Build Tech S.r.l. Prenotazione online con disponibilità in tempo reale, ritiro e riconsegna in aeroporto, cancellazione gratuita fino a 48 ore prima del ritiro.
+
+## Pagine principali
+
+- [Home](https://www.werentsrl.com/): panoramica del servizio, sedi e categorie di veicoli.
+- [Flotta](https://www.werentsrl.com/flotta): catalogo completo dei veicoli disponibili, filtrabile per categoria.
+- [Prenota](https://www.werentsrl.com/prenota): motore di prenotazione con disponibilità reale.
+- [Noleggio auto](https://www.werentsrl.com/noleggio-auto): pagina dedicata al noleggio di auto economy e premium.
+- [Noleggio van](https://www.werentsrl.com/noleggio-van): pagina dedicata al noleggio di van passeggeri fino a 9 posti.
+- [Veicoli commerciali](https://www.werentsrl.com/noleggio-veicoli-commerciali): pagina dedicata al noleggio di furgoni cargo per aziende e cantieri.
+- [Business](https://www.werentsrl.com/business): convenzioni aziendali e noleggio a lungo termine.
+- [Dove siamo](https://www.werentsrl.com/dove-siamo): indirizzi, orari e recapiti delle tre sedi.
+- [Contatti](https://www.werentsrl.com/contatti): telefono, WhatsApp, email e dati societari.
+
+## Dati societari
+
+We Rent S.r.l. — Via Stamira 10, 09134 Cagliari (CA) — P.IVA 04131090922.

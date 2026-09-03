@@ -1,6 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { ArrowRight, BadgeCheck, Boxes, Clock, IdCard, Ruler, ShieldCheck } from "lucide-react";
 
+import { BookingClassTabs, RentHubEmbed } from "@/components/booking/renthub-embed";
 import { SearchWidget } from "@/components/search-widget";
 import { TrustStrip } from "@/components/trust-strip";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,7 @@ import heroCommerciali from "@/assets/hero-commerciali.jpg";
 import { company } from "@/lib/company";
 import { vehicles } from "@/lib/fleet";
 import { useI18n } from "@/lib/i18n";
+import { PUBLIC_SITE_ONLY } from "@/lib/site-mode";
 
 export const Route = createFileRoute("/veicoli-commerciali")({
   head: () => ({
@@ -25,7 +29,9 @@ export const Route = createFileRoute("/veicoli-commerciali")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:url", content: absoluteUrl("/veicoli-commerciali") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/veicoli-commerciali") }],
   }),
   component: CommercialPage,
 });
@@ -87,6 +93,7 @@ function CommercialPage() {
 
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd([{ name: "Veicoli commerciali", path: "/veicoli-commerciali" }])} />
       <section className="relative overflow-hidden bg-ink text-ink-foreground">
         <img
           src={heroCommerciali}
@@ -112,8 +119,15 @@ function CommercialPage() {
         </div>
       </section>
 
-      <section className="mx-auto -mt-10 max-w-7xl px-4 sm:px-6">
-        <SearchWidget variant="page" fixedClass="business" />
+      <section className="mx-auto -mt-8 max-w-7xl px-4 pb-10 sm:px-6 sm:pb-14">
+        {PUBLIC_SITE_ONLY ? (
+          <>
+            <BookingClassTabs fixedClass="business" />
+            <RentHubEmbed compact params={{ class: "business" }} frameId="renthub-frame-commerciali" />
+          </>
+        ) : (
+          <SearchWidget variant="page" fixedClass="business" />
+        )}
       </section>
 
       <TrustStrip />
@@ -134,6 +148,8 @@ function CommercialPage() {
                 <div className="aspect-[16/10] bg-muted">
                   <img
                     src={v.image}
+                    srcSet={v.imageSrcSet}
+                    sizes="(min-width: 1024px) 380px, (min-width: 640px) 45vw, 90vw"
                     alt={`${v.model} — ${t("furgone a noleggio", "rental van")}`}
                     loading="lazy"
                     className="size-full object-cover"

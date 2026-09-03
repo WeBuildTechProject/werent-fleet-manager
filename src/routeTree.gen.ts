@@ -19,6 +19,9 @@ import { Route as ContattiRouteImport } from './routes/contatti'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as DoveSiamoRouteImport } from './routes/dove-siamo'
 import { Route as FlottaRouteImport } from './routes/flotta'
+import { Route as NoleggioAutoRouteImport } from './routes/noleggio-auto'
+import { Route as NoleggioVanRouteImport } from './routes/noleggio-van'
+import { Route as NoleggioVeicoliCommercialiRouteImport } from './routes/noleggio-veicoli-commerciali'
 import { Route as PrenotaRouteImport } from './routes/prenota'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as TerminiECondizioniRouteImport } from './routes/termini-e-condizioni'
@@ -95,6 +98,22 @@ const FlottaRoute = FlottaRouteImport.update({
   path: '/flotta',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NoleggioAutoRoute = NoleggioAutoRouteImport.update({
+  id: '/noleggio-auto',
+  path: '/noleggio-auto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NoleggioVanRoute = NoleggioVanRouteImport.update({
+  id: '/noleggio-van',
+  path: '/noleggio-van',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NoleggioVeicoliCommercialiRoute =
+  NoleggioVeicoliCommercialiRouteImport.update({
+    id: '/noleggio-veicoli-commerciali',
+    path: '/noleggio-veicoli-commerciali',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PrenotaRoute = PrenotaRouteImport.update({
   id: '/prenota',
   path: '/prenota',
@@ -256,6 +275,9 @@ export interface FileRoutesByFullPath {
   '/cookie-policy': typeof CookiePolicyRoute
   '/dove-siamo': typeof DoveSiamoRoute
   '/flotta': typeof FlottaRoute
+  '/noleggio-auto': typeof NoleggioAutoRoute
+  '/noleggio-van': typeof NoleggioVanRoute
+  '/noleggio-veicoli-commerciali': typeof NoleggioVeicoliCommercialiRoute
   '/prenota': typeof PrenotaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/termini-e-condizioni': typeof TerminiECondizioniRoute
@@ -293,6 +315,9 @@ export interface FileRoutesByTo {
   '/cookie-policy': typeof CookiePolicyRoute
   '/dove-siamo': typeof DoveSiamoRoute
   '/flotta': typeof FlottaRoute
+  '/noleggio-auto': typeof NoleggioAutoRoute
+  '/noleggio-van': typeof NoleggioVanRoute
+  '/noleggio-veicoli-commerciali': typeof NoleggioVeicoliCommercialiRoute
   '/prenota': typeof PrenotaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/termini-e-condizioni': typeof TerminiECondizioniRoute
@@ -332,6 +357,9 @@ export interface FileRoutesById {
   '/cookie-policy': typeof CookiePolicyRoute
   '/dove-siamo': typeof DoveSiamoRoute
   '/flotta': typeof FlottaRoute
+  '/noleggio-auto': typeof NoleggioAutoRoute
+  '/noleggio-van': typeof NoleggioVanRoute
+  '/noleggio-veicoli-commerciali': typeof NoleggioVeicoliCommercialiRoute
   '/prenota': typeof PrenotaRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/termini-e-condizioni': typeof TerminiECondizioniRoute
@@ -371,6 +399,9 @@ export interface FileRouteTypes {
     | '/cookie-policy'
     | '/dove-siamo'
     | '/flotta'
+    | '/noleggio-auto'
+    | '/noleggio-van'
+    | '/noleggio-veicoli-commerciali'
     | '/prenota'
     | '/privacy-policy'
     | '/termini-e-condizioni'
@@ -408,6 +439,9 @@ export interface FileRouteTypes {
     | '/cookie-policy'
     | '/dove-siamo'
     | '/flotta'
+    | '/noleggio-auto'
+    | '/noleggio-van'
+    | '/noleggio-veicoli-commerciali'
     | '/prenota'
     | '/privacy-policy'
     | '/termini-e-condizioni'
@@ -446,6 +480,9 @@ export interface FileRouteTypes {
     | '/cookie-policy'
     | '/dove-siamo'
     | '/flotta'
+    | '/noleggio-auto'
+    | '/noleggio-van'
+    | '/noleggio-veicoli-commerciali'
     | '/prenota'
     | '/privacy-policy'
     | '/termini-e-condizioni'
@@ -486,6 +523,9 @@ export interface RootRouteChildren {
   CookiePolicyRoute: typeof CookiePolicyRoute
   DoveSiamoRoute: typeof DoveSiamoRoute
   FlottaRoute: typeof FlottaRoute
+  NoleggioAutoRoute: typeof NoleggioAutoRoute
+  NoleggioVanRoute: typeof NoleggioVanRoute
+  NoleggioVeicoliCommercialiRoute: typeof NoleggioVeicoliCommercialiRoute
   PrenotaRoute: typeof PrenotaRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   TerminiECondizioniRoute: typeof TerminiECondizioniRoute
@@ -569,6 +609,27 @@ declare module '@tanstack/react-router' {
       path: '/flotta'
       fullPath: '/flotta'
       preLoaderRoute: typeof FlottaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/noleggio-auto': {
+      id: '/noleggio-auto'
+      path: '/noleggio-auto'
+      fullPath: '/noleggio-auto'
+      preLoaderRoute: typeof NoleggioAutoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/noleggio-van': {
+      id: '/noleggio-van'
+      path: '/noleggio-van'
+      fullPath: '/noleggio-van'
+      preLoaderRoute: typeof NoleggioVanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/noleggio-veicoli-commerciali': {
+      id: '/noleggio-veicoli-commerciali'
+      path: '/noleggio-veicoli-commerciali'
+      fullPath: '/noleggio-veicoli-commerciali'
+      preLoaderRoute: typeof NoleggioVeicoliCommercialiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/prenota': {
@@ -842,6 +903,9 @@ const rootRouteChildren: RootRouteChildren = {
   CookiePolicyRoute: CookiePolicyRoute,
   DoveSiamoRoute: DoveSiamoRoute,
   FlottaRoute: FlottaRoute,
+  NoleggioAutoRoute: NoleggioAutoRoute,
+  NoleggioVanRoute: NoleggioVanRoute,
+  NoleggioVeicoliCommercialiRoute: NoleggioVeicoliCommercialiRoute,
   PrenotaRoute: PrenotaRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   TerminiECondizioniRoute: TerminiECondizioniRoute,

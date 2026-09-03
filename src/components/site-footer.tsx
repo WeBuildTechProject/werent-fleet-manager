@@ -164,7 +164,6 @@ export function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {company.name}. {t("Tutti i diritti riservati.", "All rights reserved.")}
           </p>
-          <p>{t("*Km illimitati sulle tariffe settimanali e mensili.", "*Unlimited mileage on weekly and monthly rates.")}</p>
         </div>
       </div>
     </footer>

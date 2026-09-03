@@ -12,3 +12,8 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /gestionale
+Disallow: /auth
+Disallow: /area-clienti
+
+Sitemap: https://www.werentsrl.com/sitemap.xml

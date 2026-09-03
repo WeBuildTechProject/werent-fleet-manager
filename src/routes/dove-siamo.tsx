@@ -1,4 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Clock, MapPin, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,7 +21,9 @@ export const Route = createFileRoute("/dove-siamo")({
         property: "og:description",
         content: "Ritira il tuo veicolo in aeroporto a Cagliari, Olbia o Milano Linate.",
       },
+      { property: "og:url", content: absoluteUrl("/dove-siamo") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/dove-siamo") }],
   }),
   component: DoveSiamoPage,
 });
@@ -29,6 +33,7 @@ function DoveSiamoPage() {
 
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd([{ name: "Dove siamo", path: "/dove-siamo" }])} />
       <section className="bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <p className="eyebrow text-ink/60">{t("Le nostre sedi", "Our locations")}</p>

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { absoluteUrl } from "@/lib/seo";
 
 import { company } from "@/lib/company";
 import { useI18n } from "@/lib/i18n";
@@ -15,7 +16,9 @@ export const Route = createFileRoute("/cookie-policy")({
       { property: "og:title", content: "Cookie Policy | We Rent S.r.l." },
       { property: "og:description", content: "Cookie tecnici, di preferenza e di misurazione usati dal sito We Rent." },
       { name: "robots", content: "noindex" },
+      { property: "og:url", content: absoluteUrl("/cookie-policy") },
     ],
+    links: [{ rel: "canonical", href: absoluteUrl("/cookie-policy") }],
   }),
   component: CookiePage,
 });
