@@ -42,7 +42,7 @@ export const Route = createFileRoute("/noleggio-auto")({
       { property: "og:title", content: "Noleggio auto a Cagliari, Olbia e Milano Linate | We Rent" },
       {
         property: "og:description",
-        content: "Auto sempre nuove, prezzo trasparente, ritiro in aeroporto. Prenota online in 2 minuti.",
+        content: "Auto sempre nuove, prenotazione rapida, ritiro in aeroporto. Prenota online in 2 minuti.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: absoluteUrl("/noleggio-auto") },
@@ -56,10 +56,10 @@ export const Route = createFileRoute("/noleggio-auto")({
 const usps = [
   {
     icon: Wallet,
-    title: { it: "Prezzo tutto incluso", en: "All-inclusive price" },
+    title: { it: "Nessun costo nascosto", en: "No hidden costs" },
     body: {
-      it: "RCA, IVA e assistenza stradale 24/7 sempre nel prezzo mostrato. Nessun costo a sorpresa al banco.",
-      en: "Liability cover, VAT and 24/7 roadside assistance always in the shown price. No surprise costs at the desk.",
+      it: "RCA, IVA e assistenza stradale 24/7 sempre incluse. Nessun costo a sorpresa al banco.",
+      en: "Liability cover, VAT and 24/7 roadside assistance always included. No surprise costs at the desk.",
     },
   },
   {
@@ -153,8 +153,6 @@ const faqs: LandingFaqEntry[] = [
 function NoleggioAutoPage() {
   const { t, lang } = useI18n();
   const cars = vehicles.filter((v) => v.category === "economy" || v.category === "premium");
-  const economy = categories.find((c) => c.id === "economy")!;
-  const premium = categories.find((c) => c.id === "premium")!;
 
   return (
     <>
@@ -172,8 +170,8 @@ function NoleggioAutoPage() {
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-ink/80">
             {t(
-              "Auto economy e premium sempre nuove. RCA, IVA e assistenza stradale 24/7 incluse nel prezzo mostrato. Cancellazione gratuita fino a 48 ore prima del ritiro.",
-              "Economy and premium cars, always new. Liability cover, VAT and 24/7 roadside assistance included in the shown price. Free cancellation up to 48 hours before pick-up.",
+              "Auto economy e premium sempre nuove. RCA, IVA e assistenza stradale 24/7 incluse. Cancellazione gratuita fino a 48 ore prima del ritiro.",
+              "Economy and premium cars, always new. Liability cover, VAT and 24/7 roadside assistance included. Free cancellation up to 48 hours before pick-up.",
             )}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -207,37 +205,6 @@ function NoleggioAutoPage() {
       </section>
 
       <TrustStrip />
-
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <p className="eyebrow">{t("Prezzi trasparenti", "Transparent pricing")}</p>
-        <h2 className="mt-2 max-w-2xl text-3xl font-black sm:text-4xl">
-          {t("Il costo lo sai prima di prenotare.", "You know the cost before you book.")}
-        </h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-            <p className="eyebrow">{economy.label[lang]}</p>
-            <p className="mt-2">
-              <span className="font-display text-3xl text-primary">{t("Da", "From")} €{economy.fromPrice}</span>
-              <span className="text-sm font-semibold text-muted-foreground"> /{t("giorno", "day")}</span>
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">{economy.description[lang]}</p>
-          </div>
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-            <p className="eyebrow">{premium.label[lang]}</p>
-            <p className="mt-2">
-              <span className="font-display text-3xl text-primary">{t("Da", "From")} €{premium.fromPrice}</span>
-              <span className="text-sm font-semibold text-muted-foreground"> /{t("giorno", "day")}</span>
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">{premium.description[lang]}</p>
-          </div>
-        </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          {t(
-            "Prezzi IVA inclusa. Km illimitati sulle tariffe settimanali e mensili. Franchigia e cauzione indicate prima della conferma.",
-            "Prices include VAT. Unlimited mileage on weekly and monthly rates. Excess and deposit shown before you confirm.",
-          )}
-        </p>
-      </section>
 
       <section className="bg-secondary/60 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -292,12 +259,7 @@ function NoleggioAutoPage() {
                       {t("Clima", "A/C")}
                     </li>
                   </ul>
-                  <div className="mt-auto flex items-end justify-between gap-2 pt-5">
-                    <p>
-                      <span className="eyebrow block">{t("Da", "From")}</span>
-                      <span className="font-display text-2xl text-primary">€{v.pricePerDay}</span>
-                      <span className="text-xs font-semibold text-muted-foreground">/{t("giorno", "day")}</span>
-                    </p>
+                  <div className="mt-auto flex justify-end gap-2 pt-5">
                     <Button asChild size="sm" className="rounded-full">
                       <Link to="/prenota" search={{ class: v.category }}>
                         {t("Prenota", "Book")}

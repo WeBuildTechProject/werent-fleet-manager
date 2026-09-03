@@ -173,12 +173,7 @@ function CommercialPage() {
                       </li>
                     </ul>
                   ) : null}
-                  <div className="mt-auto flex items-end justify-between gap-2 pt-5">
-                    <p>
-                      <span className="eyebrow block">{t("Da", "From")}</span>
-                      <span className="font-display text-2xl text-primary">€{v.pricePerDay}</span>
-                      <span className="text-xs font-semibold text-muted-foreground">/{t("giorno", "day")}</span>
-                    </p>
+                  <div className="mt-auto flex justify-end gap-2 pt-5">
                     <Button asChild size="sm" className="rounded-full">
                       <Link to="/prenota" search={{ class: "business" }}>
                         {t("Prenota", "Book")}

@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import { categories, includedItems, vehicles, type CategoryId } from "@/lib/fleet";
 import { useI18n } from "@/lib/i18n";
 import { PUBLIC_SITE_ONLY } from "@/lib/site-mode";
@@ -23,7 +22,7 @@ export const Route = createFileRoute("/flotta")({
       {
         name: "description",
         content:
-          "Economy, Premium, Van 9 posti e veicoli commerciali fino a 15 m³. Filtra per categoria, cambio, carburante e prezzo e prenota online.",
+          "Economy, Premium, Van 9 posti e veicoli commerciali fino a 15 m³. Filtra per categoria, cambio e carburante e prenota online.",
       },
       { property: "og:title", content: "Flotta a noleggio — auto, van e furgoni | We Rent" },
       {
@@ -40,8 +39,6 @@ export const Route = createFileRoute("/flotta")({
   component: FlottaPage,
 });
 
-type Sort = "price-asc" | "price-desc" | "popular";
-
 const categoryIds = categories.map((c) => c.id);
 
 function FlottaPage() {
@@ -54,8 +51,6 @@ function FlottaPage() {
   );
   const [gearboxes, setGearboxes] = useState<string[]>([]);
   const [fuels, setFuels] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState(130);
-  const [sort, setSort] = useState<Sort>("popular");
 
   const toggle = <T extends string>(list: T[], value: T, set: (v: T[]) => void) =>
     set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
@@ -65,17 +60,10 @@ function FlottaPage() {
       (v) =>
         (selectedCats.length === 0 || selectedCats.includes(v.category)) &&
         (gearboxes.length === 0 || gearboxes.includes(v.gearbox)) &&
-        (fuels.length === 0 || fuels.includes(v.fuel)) &&
-        v.pricePerDay <= maxPrice,
+        (fuels.length === 0 || fuels.includes(v.fuel)),
     );
-    return [...filtered].sort((a, b) =>
-      sort === "price-asc"
-        ? a.pricePerDay - b.pricePerDay
-        : sort === "price-desc"
-          ? b.pricePerDay - a.pricePerDay
-          : b.popularity - a.popularity,
-    );
-  }, [selectedCats, gearboxes, fuels, maxPrice, sort]);
+    return [...filtered].sort((a, b) => b.popularity - a.popularity);
+  }, [selectedCats, gearboxes, fuels]);
 
   const fuelLabels: Record<string, string> = {
     benzina: t("Benzina", "Petrol"),
@@ -175,45 +163,12 @@ function FlottaPage() {
                 ))}
               </div>
             </div>
-
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-                {t("Prezzo massimo al giorno", "Max price per day")}
-              </h2>
-              <p className="mt-2 font-display text-2xl text-primary">€{maxPrice}</p>
-              <Slider
-                className="mt-3"
-                min={29}
-                max={130}
-                step={5}
-                value={[maxPrice]}
-                onValueChange={([v]) => setMaxPrice(v ?? 130)}
-                aria-label={t("Prezzo massimo", "Max price")}
-              />
-            </div>
           </aside>
 
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">
-                {results.length} {t("veicoli disponibili", "vehicles available")}
-              </p>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="sort" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  {t("Ordina", "Sort")}
-                </Label>
-                <select
-                  id="sort"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as Sort)}
-                  className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-semibold"
-                >
-                  <option value="popular">{t("Popolarità", "Popularity")}</option>
-                  <option value="price-asc">{t("Prezzo crescente", "Price low to high")}</option>
-                  <option value="price-desc">{t("Prezzo decrescente", "Price high to low")}</option>
-                </select>
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              {results.length} {t("veicoli disponibili", "vehicles available")}
+            </p>
 
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               {results.map((v) => {
@@ -262,14 +217,7 @@ function FlottaPage() {
                         ))}
                       </dl>
 
-                      <div className="mt-5 flex items-end justify-between gap-3 pt-2">
-                        <p>
-                          <span className="eyebrow block">{t("A partire da", "From")}</span>
-                          <span className="font-display text-3xl text-primary">€{v.pricePerDay}</span>
-                          <span className="text-sm font-semibold text-muted-foreground">
-                            /{t("giorno", "day")}
-                          </span>
-                        </p>
+                      <div className="mt-5 flex justify-end gap-3 pt-2">
                         <Button asChild className="rounded-full px-6">
                           <Link to="/prenota" search={{ class: v.category }}>
                             {t("Prenota", "Book")}
@@ -285,8 +233,8 @@ function FlottaPage() {
             {results.length === 0 && (
               <p className="mt-10 rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
                 {t(
-                  "Nessun veicolo con questi filtri. Prova ad allargare la fascia di prezzo.",
-                  "No vehicles match these filters. Try widening the price range.",
+                  "Nessun veicolo con questi filtri. Prova a modificare i filtri selezionati.",
+                  "No vehicles match these filters. Try adjusting your selection.",
                 )}
               </p>
             )}

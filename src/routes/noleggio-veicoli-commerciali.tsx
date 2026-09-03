@@ -23,7 +23,7 @@ import { TrustStrip } from "@/components/trust-strip";
 import { Button } from "@/components/ui/button";
 import { whatsappHref } from "@/components/whatsapp-fab";
 import { company } from "@/lib/company";
-import { categories, vehicles } from "@/lib/fleet";
+import { vehicles } from "@/lib/fleet";
 import { useI18n } from "@/lib/i18n";
 import { PUBLIC_SITE_ONLY } from "@/lib/site-mode";
 import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
@@ -168,7 +168,6 @@ const faqs: LandingFaqEntry[] = [
 function NoleggioVeicoliCommercialiPage() {
   const { t, lang } = useI18n();
   const cargo = vehicles.filter((v) => v.category === "business");
-  const businessCategory = categories.find((c) => c.id === "business")!;
 
   return (
     <>
@@ -221,27 +220,6 @@ function NoleggioVeicoliCommercialiPage() {
       </section>
 
       <TrustStrip />
-
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <p className="eyebrow">{t("Prezzi trasparenti", "Transparent pricing")}</p>
-        <h2 className="mt-2 max-w-2xl text-3xl font-black sm:text-4xl">
-          {t("Il costo lo sai prima di prenotare.", "You know the cost before you book.")}
-        </h2>
-        <div className="mt-8 max-w-sm rounded-2xl border border-border bg-card p-6 shadow-card">
-          <p className="eyebrow">{businessCategory.label[lang]}</p>
-          <p className="mt-2">
-            <span className="font-display text-3xl text-primary">{t("Da", "From")} €{businessCategory.fromPrice}</span>
-            <span className="text-sm font-semibold text-muted-foreground"> /{t("giorno", "day")}</span>
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">{businessCategory.description[lang]}</p>
-        </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          {t(
-            "Prezzi IVA inclusa. Km illimitati sulle tariffe settimanali e mensili. Formule a lungo termine su richiesta.",
-            "Prices include VAT. Unlimited mileage on weekly and monthly rates. Long-term formulas on request.",
-          )}
-        </p>
-      </section>
 
       <section className="bg-secondary/60 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -303,12 +281,7 @@ function NoleggioVeicoliCommercialiPage() {
                       </li>
                     </ul>
                   ) : null}
-                  <div className="mt-auto flex items-end justify-between gap-2 pt-5">
-                    <p>
-                      <span className="eyebrow block">{t("Da", "From")}</span>
-                      <span className="font-display text-2xl text-primary">€{v.pricePerDay}</span>
-                      <span className="text-xs font-semibold text-muted-foreground">/{t("giorno", "day")}</span>
-                    </p>
+                  <div className="mt-auto flex justify-end gap-2 pt-5">
                     <Button asChild size="sm" className="rounded-full">
                       <Link to="/prenota" search={{ class: "business" }}>
                         {t("Prenota", "Book")}
