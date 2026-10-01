@@ -24,6 +24,7 @@ dist-ssr
 .env
 .env.*
 !.env.cargos.example
+!.env.werent.example
 
 # Editor directories and files
 .vscode/*

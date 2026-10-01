@@ -35,25 +35,28 @@ import {
   publicInsuranceQuery,
   parseBookingSearch,
 } from "@/lib/booking";
-import { createBookingRequest, searchAvailability, type AvailableVehicle } from "@/lib/booking.functions";
+import {
+  createBookingRequest,
+  searchAvailability,
+  type AvailableVehicle,
+} from "@/lib/booking.functions";
 import { createCheckoutSession, getPaymentContext } from "@/lib/payments.functions";
 import { vehicles as fleetVehicles } from "@/lib/fleet";
-import { InsurancePackagePicker, type InsuranceCatalog } from "@/components/booking/insurance-packages";
+import {
+  InsurancePackagePicker,
+  type InsuranceCatalog,
+} from "@/components/booking/insurance-packages";
 import { ScrollToAccept } from "@/components/legal/scroll-to-accept";
 import { DocumentUploader, type UploadedDocument } from "@/components/booking/document-uploader";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
 import { useI18n } from "@/lib/i18n";
-import {
-  ageSurchargePerDay,
-  computePrice,
-  pickInsurancePackages,
-  type Extra,
-} from "@/lib/pricing";
+import { ageSurchargePerDay, computePrice, pickInsurancePackages, type Extra } from "@/lib/pricing";
 import { storedUtm, trackBookingConversion, useConsent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 import { legalClauseAnchor, legalDocumentsQuery, VEXATIOUS_CLAUSE_CODES } from "@/lib/legal.tsx";
 import { privacyNoticeMarkdown } from "@/lib/privacy";
-import { PUBLIC_SITE_ONLY } from "@/lib/site-mode";
+import { BOOKING_ENGINE } from "@/lib/site-mode";
+import { PrenotaWerentPage } from "@/components/booking/prenota-werent-page";
 import { PrenotaRentHubPage } from "@/components/booking/prenota-renthub-page";
 
 export const Route = createFileRoute("/prenota")({
@@ -80,7 +83,12 @@ export const Route = createFileRoute("/prenota")({
   // Fase provvisoria: swap a livello di config (non logica interna al
   // componente) per non introdurre violazioni dell'ordine degli hook e per
   // restare completamente reversibile — il flusso nativo resta intatto.
-  component: PUBLIC_SITE_ONLY ? PrenotaRentHubPage : PrenotaPage,
+  component:
+    BOOKING_ENGINE === "werent"
+      ? PrenotaWerentPage
+      : BOOKING_ENGINE === "renthub"
+        ? PrenotaRentHubPage
+        : PrenotaPage,
 });
 
 const euro = (v: number) =>
@@ -146,8 +154,12 @@ function PrenotaPage() {
   const extras = useQuery(publicExtrasQuery);
   const insurance = useQuery(publicInsuranceQuery);
   const legalDocuments = useQuery(legalDocumentsQuery);
-  const termsDoc = legalDocuments.data?.find((document) => document.slug === "termini-e-condizioni");
-  const contractDoc = legalDocuments.data?.find((document) => document.slug === "condizioni-generali");
+  const termsDoc = legalDocuments.data?.find(
+    (document) => document.slug === "termini-e-condizioni",
+  );
+  const contractDoc = legalDocuments.data?.find(
+    (document) => document.slug === "condizioni-generali",
+  );
 
   // Con criteri già presenti nell'URL si mostrano direttamente i risultati.
   const [step, setStep] = useState(search.date_from && search.from ? 1 : 0);
@@ -195,10 +207,10 @@ function PrenotaPage() {
       : null;
   const allMandatoryAccepted = Boolean(
     legalAcceptance &&
-      consents.terms &&
-      consents.contract &&
-      consents.vexatious &&
-      consents.privacy,
+    consents.terms &&
+    consents.contract &&
+    consents.vexatious &&
+    consents.privacy,
   );
   // Documenti obbligatori caricati nello spazio privato prima della conferma.
   const [documentSessionId, setDocumentSessionId] = useState<string | null>(null);
@@ -206,7 +218,8 @@ function PrenotaPage() {
   const uploadedDocuments = DOCUMENT_TYPES.map((tipo) => documents[tipo]).filter(
     (d): d is UploadedDocument => Boolean(d),
   );
-  const allDocumentsUploaded = Boolean(documentSessionId) && uploadedDocuments.length === DOCUMENT_TYPES.length;
+  const allDocumentsUploaded =
+    Boolean(documentSessionId) && uploadedDocuments.length === DOCUMENT_TYPES.length;
   const canConfirm = allMandatoryAccepted && allDocumentsUploaded;
   const [confirmation, setConfirmation] = useState<{ code: string; total: number } | null>(null);
 
@@ -235,7 +248,6 @@ function PrenotaPage() {
     search.class,
     search.pagamento,
   ]);
-
 
   const dateFrom = search.date_from ?? isoDate(1);
   const dateTo = search.date_to ?? isoDate(4);
@@ -292,8 +304,7 @@ function PrenotaPage() {
   // Il veicolo scelto è riletto dall'elenco aggiornato: se lo sconto fedeltà
   // entra in gioco dopo l'inserimento dell'email, il totale si allinea subito.
   const chosen =
-    (chosenPick && availability.data?.vehicles.find((v) => v.id === chosenPick.id)) ??
-    chosenPick;
+    (chosenPick && availability.data?.vehicles.find((v) => v.id === chosenPick.id)) ?? chosenPick;
 
   const days = availability.data?.days ?? 1;
   const extrasList = (extras.data ?? []) as Extra[];
@@ -306,16 +317,12 @@ function PrenotaPage() {
     specs: insurance.data?.specs ?? [],
     components: insurance.data?.components ?? [],
   };
-  const insurancePkg =
-    insuranceCatalog.packages.find((p) => p.id === insurancePackageId) ?? null;
+  const insurancePkg = insuranceCatalog.packages.find((p) => p.id === insurancePackageId) ?? null;
 
   // Deep-link "Protezione Zero Pensieri": preseleziona la copertura più
   // protettiva (franchigia residua più bassa) tra quelle valide per il veicolo.
   const wantsExtendedInsurance = search.insurance === "estesa";
-  const eligibleInsurance = pickInsurancePackages(
-    insuranceCatalog.packages,
-    chosen?.category_id,
-  );
+  const eligibleInsurance = pickInsurancePackages(insuranceCatalog.packages, chosen?.category_id);
   const suggestedInsuranceId = eligibleInsurance
     .slice()
     .sort((a, b) => Number(a.franchigia_residua) - Number(b.franchigia_residua))[0]?.id;
@@ -390,7 +397,10 @@ function PrenotaPage() {
 
   const badges = [
     { icon: Lock, label: t("Connessione crittografata", "Encrypted connection") },
-    { icon: CalendarCheck, label: t("Cancellazione gratuita fino a 48h", "Free cancellation up to 48h") },
+    {
+      icon: CalendarCheck,
+      label: t("Cancellazione gratuita fino a 48h", "Free cancellation up to 48h"),
+    },
     { icon: ShieldCheck, label: t("RCA e IVA incluse", "Insurance and VAT included") },
   ];
 
@@ -421,7 +431,10 @@ function PrenotaPage() {
           </p>
           <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
             {badges.map((badge) => (
-              <li key={badge.label} className="flex items-center gap-2 text-sm font-semibold text-ink/80">
+              <li
+                key={badge.label}
+                className="flex items-center gap-2 text-sm font-semibold text-ink/80"
+              >
                 <badge.icon className="size-4" aria-hidden />
                 {badge.label}
               </li>
@@ -477,7 +490,12 @@ function PrenotaPage() {
           <div className="space-y-4">
             {/* Barra ricerca sempre accessibile durante lo scroll dei risultati. */}
             <div className="sticky top-0 z-30 -mx-4 flex flex-wrap items-center gap-3 border-b border-border bg-background/95 px-4 py-3 text-sm text-muted-foreground backdrop-blur sm:-mx-6 sm:px-6">
-              <Button size="sm" variant="outline" className="rounded-full" onClick={() => setStep(0)}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full"
+                onClick={() => setStep(0)}
+              >
                 <ArrowLeft className="size-4" /> {t("Modifica ricerca", "Edit search")}
               </Button>
               <span>
@@ -649,7 +667,9 @@ function PrenotaPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (!allMandatoryAccepted) {
-                toast.error(t("Completa le accettazioni obbligatorie.", "Complete the required acceptances."));
+                toast.error(
+                  t("Completa le accettazioni obbligatorie.", "Complete the required acceptances."),
+                );
                 return;
               }
               if (!allDocumentsUploaded) {
@@ -880,7 +900,12 @@ function PrenotaPage() {
               </fieldset>
 
               <div className="flex gap-2 sm:col-span-2">
-                <Button type="button" variant="outline" className="rounded-full" onClick={() => setStep(2)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full"
+                  onClick={() => setStep(2)}
+                >
                   <ArrowLeft className="size-4" /> {t("Indietro", "Back")}
                 </Button>
                 <Button type="submit" className="rounded-full" disabled={!canConfirm}>
@@ -904,7 +929,9 @@ function PrenotaPage() {
         {step === 4 && chosen ? (
           <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <Card className="space-y-3 p-6">
-              <h2 className="font-display text-2xl">{t("Riepilogo richiesta", "Request summary")}</h2>
+              <h2 className="font-display text-2xl">
+                {t("Riepilogo richiesta", "Request summary")}
+              </h2>
               <p className="text-sm text-muted-foreground">
                 {customer.full_name} · {customer.email}
               </p>
@@ -935,7 +962,11 @@ function PrenotaPage() {
                   disabled={book.isPending || !customer.full_name || !customer.email || !canConfirm}
                   onClick={() => book.mutate()}
                 >
-                  {book.isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+                  {book.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Check className="size-4" />
+                  )}
                   {t("Richiedi prenotazione", "Request booking")}
                 </Button>
               </div>
@@ -998,7 +1029,9 @@ function PrenotaPage() {
                       `${t("Veicolo", "Vehicle")}: ${chosen?.model ?? "-"}`,
                       `${t("Periodo", "Period")}: ${dateFrom} → ${dateTo}`,
                       `${t("Cliente", "Customer")}: ${customer.full_name} ${customer.email}`,
-                      confirmation.total > 0 ? `${t("Totale", "Total")}: ${euro(confirmation.total)}` : "",
+                      confirmation.total > 0
+                        ? `${t("Totale", "Total")}: ${euro(confirmation.total)}`
+                        : "",
                       company.name,
                     ]
                       .filter(Boolean)
@@ -1112,10 +1145,14 @@ function Summary({
           <span className="font-display text-2xl">{euro(total)}</span>
         </div>
         <p className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-          <BadgeEuro className="size-3.5" aria-hidden /> {t("Nessun costo nascosto", "No hidden costs")}
+          <BadgeEuro className="size-3.5" aria-hidden />{" "}
+          {t("Nessun costo nascosto", "No hidden costs")}
         </p>
         <p className="text-xs text-muted-foreground">
-          {t("Sconti, coupon e supplemento età sono già inclusi.", "Discounts, coupons and age surcharge included.")}
+          {t(
+            "Sconti, coupon e supplemento età sono già inclusi.",
+            "Discounts, coupons and age surcharge included.",
+          )}
         </p>
       </Card>
 
@@ -1200,12 +1237,12 @@ function PaymentPanel({ code }: { code: string }) {
               `Full online payment: ${euro(ctx.data.amountNow)}.`,
             )}
       </p>
-      <Button
-        className="rounded-full"
-        disabled={pay.isPending}
-        onClick={() => pay.mutate()}
-      >
-        {pay.isPending ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
+      <Button className="rounded-full" disabled={pay.isPending} onClick={() => pay.mutate()}>
+        {pay.isPending ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <CreditCard className="size-4" />
+        )}
         {t("Paga e conferma", "Pay and confirm")}
       </Button>
       <p className="text-xs text-muted-foreground">

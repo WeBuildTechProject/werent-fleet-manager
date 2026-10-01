@@ -28,6 +28,7 @@ import { Route as TerminiECondizioniRouteImport } from './routes/termini-e-condi
 import { Route as VeicoliCommercialiRouteImport } from './routes/veicoli-commerciali'
 import { Route as AuthenticatedGestionaleRouteImport } from './routes/_authenticated/gestionale'
 import { Route as AreaClientiAccediRouteImport } from './routes/area-clienti.accedi'
+import { Route as PrenotazioneCodeRouteImport } from './routes/prenotazione.$code'
 import { Route as AuthenticatedGestionaleIndexRouteImport } from './routes/_authenticated/gestionale.index'
 import { Route as AuthenticatedGestionaleAnalyticsRouteImport } from './routes/_authenticated/gestionale.analytics'
 import { Route as AuthenticatedGestionaleCalendarioRouteImport } from './routes/_authenticated/gestionale.calendario'
@@ -142,6 +143,11 @@ const AuthenticatedGestionaleRoute = AuthenticatedGestionaleRouteImport.update({
 const AreaClientiAccediRoute = AreaClientiAccediRouteImport.update({
   id: '/area-clienti/accedi',
   path: '/area-clienti/accedi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrenotazioneCodeRoute = PrenotazioneCodeRouteImport.update({
+  id: '/prenotazione/$code',
+  path: '/prenotazione/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedGestionaleIndexRoute =
@@ -284,6 +290,7 @@ export interface FileRoutesByFullPath {
   '/veicoli-commerciali': typeof VeicoliCommercialiRoute
   '/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
   '/area-clienti/accedi': typeof AreaClientiAccediRoute
+  '/prenotazione/$code': typeof PrenotazioneCodeRoute
   '/gestionale/analytics': typeof AuthenticatedGestionaleAnalyticsRoute
   '/gestionale/calendario': typeof AuthenticatedGestionaleCalendarioRoute
   '/gestionale/cargos': typeof AuthenticatedGestionaleCargosRoute
@@ -323,6 +330,7 @@ export interface FileRoutesByTo {
   '/termini-e-condizioni': typeof TerminiECondizioniRoute
   '/veicoli-commerciali': typeof VeicoliCommercialiRoute
   '/area-clienti/accedi': typeof AreaClientiAccediRoute
+  '/prenotazione/$code': typeof PrenotazioneCodeRoute
   '/gestionale/analytics': typeof AuthenticatedGestionaleAnalyticsRoute
   '/gestionale/calendario': typeof AuthenticatedGestionaleCalendarioRoute
   '/gestionale/cargos': typeof AuthenticatedGestionaleCargosRoute
@@ -366,6 +374,7 @@ export interface FileRoutesById {
   '/veicoli-commerciali': typeof VeicoliCommercialiRoute
   '/_authenticated/gestionale': typeof AuthenticatedGestionaleRouteWithChildren
   '/area-clienti/accedi': typeof AreaClientiAccediRoute
+  '/prenotazione/$code': typeof PrenotazioneCodeRoute
   '/_authenticated/gestionale/analytics': typeof AuthenticatedGestionaleAnalyticsRoute
   '/_authenticated/gestionale/calendario': typeof AuthenticatedGestionaleCalendarioRoute
   '/_authenticated/gestionale/cargos': typeof AuthenticatedGestionaleCargosRoute
@@ -408,6 +417,7 @@ export interface FileRouteTypes {
     | '/veicoli-commerciali'
     | '/gestionale'
     | '/area-clienti/accedi'
+    | '/prenotazione/$code'
     | '/gestionale/analytics'
     | '/gestionale/calendario'
     | '/gestionale/cargos'
@@ -447,6 +457,7 @@ export interface FileRouteTypes {
     | '/termini-e-condizioni'
     | '/veicoli-commerciali'
     | '/area-clienti/accedi'
+    | '/prenotazione/$code'
     | '/gestionale/analytics'
     | '/gestionale/calendario'
     | '/gestionale/cargos'
@@ -489,6 +500,7 @@ export interface FileRouteTypes {
     | '/veicoli-commerciali'
     | '/_authenticated/gestionale'
     | '/area-clienti/accedi'
+    | '/prenotazione/$code'
     | '/_authenticated/gestionale/analytics'
     | '/_authenticated/gestionale/calendario'
     | '/_authenticated/gestionale/cargos'
@@ -531,6 +543,7 @@ export interface RootRouteChildren {
   TerminiECondizioniRoute: typeof TerminiECondizioniRoute
   VeicoliCommercialiRoute: typeof VeicoliCommercialiRoute
   AreaClientiAccediRoute: typeof AreaClientiAccediRoute
+  PrenotazioneCodeRoute: typeof PrenotazioneCodeRoute
   ApiPublicCronCargosRoute: typeof ApiPublicCronCargosRoute
   ApiPublicCronNotificationsRoute: typeof ApiPublicCronNotificationsRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -672,6 +685,13 @@ declare module '@tanstack/react-router' {
       path: '/area-clienti/accedi'
       fullPath: '/area-clienti/accedi'
       preLoaderRoute: typeof AreaClientiAccediRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prenotazione/$code': {
+      id: '/prenotazione/$code'
+      path: '/prenotazione/$code'
+      fullPath: '/prenotazione/$code'
+      preLoaderRoute: typeof PrenotazioneCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/gestionale/': {
@@ -911,6 +931,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerminiECondizioniRoute: TerminiECondizioniRoute,
   VeicoliCommercialiRoute: VeicoliCommercialiRoute,
   AreaClientiAccediRoute: AreaClientiAccediRoute,
+  PrenotazioneCodeRoute: PrenotazioneCodeRoute,
   ApiPublicCronCargosRoute: ApiPublicCronCargosRoute,
   ApiPublicCronNotificationsRoute: ApiPublicCronNotificationsRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,

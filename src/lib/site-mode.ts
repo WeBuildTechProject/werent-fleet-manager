@@ -10,3 +10,16 @@
  * necessaria: tutte le route e i dati restano intatti.
  */
 export const PUBLIC_SITE_ONLY = import.meta.env["VITE_PUBLIC_SITE_ONLY"] === "true";
+
+/**
+ * Motore di prenotazione del sito:
+ *  - "werent": prenotazione nativa collegata al gestionale We Rent (lotto 7b);
+ *  - altrimenti, in fase provvisoria, l'iframe RentHub.
+ * Si attiva con VITE_BOOKING_ENGINE=werent quando il gestionale è raggiungibile online.
+ */
+export const BOOKING_ENGINE: "werent" | "renthub" | "legacy" =
+  import.meta.env["VITE_BOOKING_ENGINE"] === "werent"
+    ? "werent"
+    : PUBLIC_SITE_ONLY
+      ? "renthub"
+      : "legacy";

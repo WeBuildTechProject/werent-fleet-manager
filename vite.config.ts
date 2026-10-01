@@ -21,6 +21,8 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // Porta 3000: la 8080 è dell'API del gestionale sul Mac.
+    server: { port: 3000 },
     resolve: {
       alias: {
         "entities/lib/decode.js": path.resolve(
