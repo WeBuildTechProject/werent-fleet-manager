@@ -305,7 +305,7 @@ function ManageBookingPage() {
               </li>
               <li className="flex gap-2">
                 <CreditCard className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-                {t("Carta di credito per la cauzione.", "A credit card for the deposit.")}
+                {t("Carta di credito o di debito (Visa o Mastercard) per la cauzione.", "A credit or debit card (Visa or Mastercard) for the deposit.")}
               </li>
             </ul>
             <a

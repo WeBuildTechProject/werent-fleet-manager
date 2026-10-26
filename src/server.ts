@@ -21,6 +21,18 @@ const PRODUCTION_HOSTS = new Set(["www.werentsrl.com", "werentsrl.com"]);
 const SUPABASE_ORIGIN = "https://yjirojfrrxukhioxgxhq.supabase.co";
 const SUPABASE_WS_ORIGIN = "wss://yjirojfrrxukhioxgxhq.supabase.co";
 
+// Domini del tag Google (GA4 + Google Ads + conversion linker), dalla guida CSP di Google Tag.
+const GOOGLE_TAG_CONNECT = [
+  "https://*.google-analytics.com",
+  "https://*.analytics.google.com",
+  "https://*.googletagmanager.com",
+  "https://*.g.doubleclick.net",
+  "https://*.google.com",
+  "https://*.google.it",
+  "https://www.googleadservices.com",
+  "https://pagead2.googlesyndication.com",
+].join(" ");
+
 function contentSecurityPolicy(): string {
   return [
     "default-src 'self'",
@@ -28,13 +40,14 @@ function contentSecurityPolicy(): string {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    `connect-src 'self' ${SUPABASE_ORIGIN} ${SUPABASE_WS_ORIGIN}`,
+    // Google Analytics 4 e Google Ads (tag Google): senza questi domini gli invii di misurazione verrebbero bloccati.
+    `connect-src 'self' ${SUPABASE_ORIGIN} ${SUPABASE_WS_ORIGIN} ${GOOGLE_TAG_CONNECT}`,
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
     "child-src 'self' blob:",
     // RentHub (motore di prenotazione, iframe) e Google Maps (embed sede) —
     // gli unici due iframe di terze parti usati dal sito pubblico.
-    "frame-src 'self' https://werentsardegna.renthubsoftware.com https://www.google.com",
+    "frame-src 'self' https://werentsardegna.renthubsoftware.com https://www.google.com https://td.doubleclick.net https://www.googletagmanager.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

@@ -3,7 +3,7 @@ import { JsonLd } from "@/components/json-ld";
 import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Mail, MapPin, Phone } from "lucide-react";
 
-import { whatsappHref } from "@/components/whatsapp-fab";
+import { whatsappHref, whatsappLink } from "@/components/whatsapp-fab";
 import { WhatsappIcon } from "@/components/whatsapp-icon";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/contatti")({
       {
         name: "description",
         content:
-          "Telefono e WhatsApp +39 389 286 5597, email booking@werentsrl.com. Assistenza 24/7 su Cagliari, Olbia e Milano Linate.",
+          "Telefono e WhatsApp +39 389 286 5597 (Cagliari e Olbia) e +39 392 899 3220 (Milano Linate), email booking@werentsrl.com. Assistenza 24/7.",
       },
       { property: "og:title", content: "We Rent | Contatti e Sedi a Cagliari, Olbia e Milano" },
       {
@@ -34,17 +34,29 @@ export const Route = createFileRoute("/contatti")({
 function ContattiPage() {
   const { t, lang } = useI18n();
 
+  const linate = branches.find((b) => b.code === "LIN")!;
   const channels = [
     {
       icon: Phone,
-      title: t("Telefono", "Phone"),
+      title: t("Telefono · Cagliari e Olbia", "Phone · Cagliari and Olbia"),
       value: company.phone,
       href: company.phoneHref,
-      note: t("Tutti i giorni, 08:00 – 21:00", "Every day, 8:00 am – 9:00 pm"),
+      note: t("Tutti i giorni, 07:00 – 01:30", "Every day, 7:00 am – 1:30 am"),
+    },
+    {
+      icon: Phone,
+      title: t("Telefono · Milano Linate", "Phone · Milan Linate"),
+      value: linate.phone,
+      href: linate.phoneHref,
+      note: t(
+        "Chiamate e WhatsApp della sede di Linate",
+        "Calls and WhatsApp for the Linate branch",
+      ),
+      whatsapp: whatsappLink(linate.whatsappNumber),
     },
     {
       icon: WhatsappIcon,
-      title: "WhatsApp",
+      title: t("WhatsApp · Cagliari e Olbia", "WhatsApp · Cagliari and Olbia"),
       value: company.phone,
       href: whatsappHref,
       note: t("Risposta media in 15 minuti", "Average reply in 15 minutes"),
@@ -77,23 +89,53 @@ function ContattiPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="grid gap-5 md:grid-cols-3">
-          {channels.map((c) => (
-            <a
-              key={c.title}
-              href={c.href}
-              target={c.href.startsWith("http") ? "_blank" : undefined}
-              rel="noreferrer"
-              className="rounded-2xl border border-border bg-card p-6 shadow-card transition-shadow hover:shadow-elev"
-            >
-              <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <c.icon className="size-5" aria-hidden />
-              </span>
-              <h2 className="mt-4 text-lg">{c.title}</h2>
-              <p className="mt-1 font-semibold text-primary">{c.value}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{c.note}</p>
-            </a>
-          ))}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {channels.map((c) =>
+            "whatsapp" in c && c.whatsapp ? (
+              <div
+                key={c.title}
+                className="rounded-2xl border border-border bg-card p-6 shadow-card"
+              >
+                <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                  <c.icon className="size-5" aria-hidden />
+                </span>
+                <h2 className="mt-4 text-lg">{c.title}</h2>
+                <a
+                  href={c.href}
+                  className="mt-1 block font-semibold text-primary hover:underline"
+                  data-branch="LIN"
+                >
+                  {c.value}
+                </a>
+                <a
+                  href={c.whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 inline-flex items-center gap-2 text-sm font-semibold hover:underline"
+                  data-branch="LIN"
+                >
+                  <WhatsappIcon className="size-4" aria-hidden />{" "}
+                  {t("Scrivi su WhatsApp", "Message on WhatsApp")}
+                </a>
+                <p className="mt-1 text-sm text-muted-foreground">{c.note}</p>
+              </div>
+            ) : (
+              <a
+                key={c.title}
+                href={c.href}
+                target={c.href.startsWith("http") ? "_blank" : undefined}
+                rel="noreferrer"
+                className="rounded-2xl border border-border bg-card p-6 shadow-card transition-shadow hover:shadow-elev"
+              >
+                <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                  <c.icon className="size-5" aria-hidden />
+                </span>
+                <h2 className="mt-4 text-lg">{c.title}</h2>
+                <p className="mt-1 font-semibold text-primary">{c.value}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{c.note}</p>
+              </a>
+            ),
+          )}
         </div>
 
         <div className="mt-12 grid gap-8 rounded-3xl bg-ink p-8 text-ink-foreground shadow-elev lg:grid-cols-2 lg:p-12">
@@ -107,6 +149,13 @@ function ContattiPage() {
                     <span className="block font-bold">{b.name}</span>
                     <span className="block text-ink-foreground/70">{b.address}</span>
                     <span className="block text-ink-foreground/60">{b.hours[lang]}</span>
+                    <a
+                      href={b.phoneHref}
+                      className="block font-semibold text-primary-soft hover:underline"
+                      data-branch={b.code}
+                    >
+                      {b.phone}
+                    </a>
                   </span>
                 </li>
               ))}
@@ -127,7 +176,10 @@ function ContattiPage() {
                 [t("Capitale sociale", "Share capital"), company.shareCapital],
                 [t("Gruppo", "Group"), company.group],
               ].map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-4 border-b border-border pb-2 last:border-0">
+                <div
+                  key={k}
+                  className="flex justify-between gap-4 border-b border-border pb-2 last:border-0"
+                >
                   <dt className="text-muted-foreground">{k}</dt>
                   <dd className="text-right font-semibold">{v}</dd>
                 </div>

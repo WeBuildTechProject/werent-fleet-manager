@@ -22,7 +22,22 @@ export type Branch = {
   address: string;
   area: { it: string; en: string };
   hours: { it: string; en: string };
+  /** Telefono e WhatsApp della sede (Linate ha un numero proprio). */
+  phone: string;
+  phoneHref: string;
+  whatsappNumber: string;
   mapQuery: string;
+};
+
+/** Orari delle sedi: come sulla scheda Google (comunicazione del 26/10/2026). */
+const HOURS = {
+  it: "Tutti i giorni 07:00 – 01:30 · assistenza 24/7",
+  en: "Daily 7:00 am – 1:30 am · 24/7 support",
+};
+const GENERAL_PHONE = {
+  phone: "+39 389 286 5597",
+  phoneHref: "tel:+393892865597",
+  whatsappNumber: "393892865597",
 };
 
 export const branches: Branch[] = [
@@ -33,7 +48,8 @@ export const branches: Branch[] = [
     name: "Cagliari Aeroporto (Elmas)",
     address: "Via Bacco 11, Z.I. Aeroporto, Elmas (CA)",
     area: { it: "Sede principale · Sud Sardegna", en: "Main branch · South Sardinia" },
-    hours: { it: "Tutti i giorni 07:00 – 23:00 · assistenza 24/7", en: "Daily 7:00 am – 11:00 pm · 24/7 support" },
+    hours: HOURS,
+    ...GENERAL_PHONE,
     mapQuery: "Via Bacco 11 Elmas Cagliari",
   },
   {
@@ -43,7 +59,8 @@ export const branches: Branch[] = [
     name: "Olbia Costa Smeralda",
     address: "Via Ruanda 11, Olbia (SS)",
     area: { it: "Nord Sardegna", en: "North Sardinia" },
-    hours: { it: "Tutti i giorni 08:00 – 22:00 · assistenza 24/7", en: "Daily 8:00 am – 10:00 pm · 24/7 support" },
+    hours: HOURS,
+    ...GENERAL_PHONE,
     mapQuery: "Via Ruanda 11 Olbia",
   },
   {
@@ -53,7 +70,10 @@ export const branches: Branch[] = [
     name: "Milano Linate Aeroporto",
     address: "Aeroporto di Milano Linate, Segrate (MI)",
     area: { it: "Nord Italia", en: "Northern Italy" },
-    hours: { it: "Tutti i giorni 08:00 – 21:00 · assistenza 24/7", en: "Daily 8:00 am – 9:00 pm · 24/7 support" },
+    hours: HOURS,
+    phone: "+39 392 899 3220",
+    phoneHref: "tel:+393928993220",
+    whatsappNumber: "393928993220",
     mapQuery: "Aeroporto di Milano Linate",
   },
 ];

@@ -11,7 +11,11 @@ import { cn } from "@/lib/utils";
 const message =
   "Ciao! Vorrei ricevere maggiori informazioni su disponibilità e tariffe per un noleggio auto con We Rent. Potete aiutarmi? Grazie!";
 
-export const whatsappHref = `https://wa.me/393892865597?text=${encodeURIComponent(message)}`;
+/** Link WhatsApp con messaggio già pronto per un numero (formato internazionale senza +). */
+export const whatsappLink = (number: string) =>
+  `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+
+export const whatsappHref = whatsappLink("393892865597");
 
 /** Pulsante flottante WhatsApp presente su tutte le pagine pubbliche. */
 export function WhatsappFab() {

@@ -16,9 +16,10 @@ export function absoluteUrl(path: string): string {
 
 /** Coordinate geografiche e orari strutturati per sede (per JSON-LD AutoRental). */
 const BRANCH_GEO: Record<string, { lat: number; lng: number; opens: string; closes: string }> = {
-  cagliari: { lat: 39.2515, lng: 9.0543, opens: "07:00", closes: "23:00" },
-  olbia: { lat: 40.8987, lng: 9.5175, opens: "08:00", closes: "22:00" },
-  linate: { lat: 45.4494, lng: 9.2769, opens: "08:00", closes: "21:00" },
+  // 07:00 – 01:30 come sulla scheda Google (26/10/2026): «closes» prima di «opens» = chiusura dopo mezzanotte.
+  cagliari: { lat: 39.2515, lng: 9.0543, opens: "07:00", closes: "01:30" },
+  olbia: { lat: 40.8987, lng: 9.5175, opens: "07:00", closes: "01:30" },
+  linate: { lat: 45.4494, lng: 9.2769, opens: "07:00", closes: "01:30" },
 };
 
 export function buildOrganizationJsonLd() {
@@ -60,7 +61,7 @@ export function buildAutoRentalJsonLd() {
       name: `We Rent — ${b.name}`,
       url: absoluteUrl("/dove-siamo"),
       image: absoluteUrl("/favicon.ico"),
-      telephone: company.phone,
+      telephone: b.phone,
       priceRange: "€€",
       parentOrganization: { "@id": `${SITE_URL}/#organization` },
       address: {

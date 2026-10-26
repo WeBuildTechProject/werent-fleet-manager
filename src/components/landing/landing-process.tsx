@@ -21,8 +21,8 @@ const steps = [
     n: "03",
     title: { it: "Ritiro in aeroporto", en: "Airport pick-up" },
     body: {
-      it: "Documenti, carta di credito per la cauzione e le chiavi sono pronte alla sede scelta.",
-      en: "Documents, credit card for the deposit, and keys are ready at your chosen branch.",
+      it: "Documenti, carta di credito o di debito per la cauzione e le chiavi sono pronte alla sede scelta.",
+      en: "Documents, credit or debit card for the deposit, and keys are ready at your chosen branch.",
     },
   },
   {

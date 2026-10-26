@@ -4,7 +4,9 @@ import { absoluteUrl, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Clock, MapPin, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { branches, company } from "@/lib/company";
+import { branches } from "@/lib/company";
+import { whatsappLink } from "@/components/whatsapp-fab";
+import { WhatsappIcon } from "@/components/whatsapp-icon";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/dove-siamo")({
@@ -70,8 +72,24 @@ function DoveSiamoPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <Phone className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-                  <a href={company.phoneHref} className="font-semibold hover:underline">
-                    {company.phone}
+                  <a
+                    href={b.phoneHref}
+                    className="font-semibold hover:underline"
+                    data-branch={b.code}
+                  >
+                    {b.phone}
+                  </a>
+                </li>
+                <li className="flex items-start gap-3">
+                  <WhatsappIcon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  <a
+                    href={whatsappLink(b.whatsappNumber)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold hover:underline"
+                    data-branch={b.code}
+                  >
+                    {t("WhatsApp", "WhatsApp")} {b.phone}
                   </a>
                 </li>
               </ul>

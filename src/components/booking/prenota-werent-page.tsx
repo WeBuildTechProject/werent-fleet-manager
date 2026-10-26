@@ -653,8 +653,8 @@ function BookingForm({
             </div>
             <p className="text-xs text-muted-foreground sm:col-span-2">
               {t(
-                "Al ritiro servono patente valida e documento d'identità del conducente, e una carta di credito per la cauzione.",
-                "At pickup you need the driver's valid licence and ID, and a credit card for the deposit.",
+                "Al ritiro servono patente valida e documento d'identità del conducente, e una carta di credito o di debito (Visa o Mastercard) per la cauzione.",
+                "At pickup you need the driver's valid licence and ID, and a credit or debit card (Visa or Mastercard) for the deposit.",
               )}
             </p>
           </Card>

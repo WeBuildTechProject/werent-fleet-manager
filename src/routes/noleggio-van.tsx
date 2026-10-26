@@ -119,9 +119,9 @@ const faqs: LandingFaqEntry[] = [
   },
   {
     q: "Che documenti servono al ritiro?",
-    a: "Carta d'identità o passaporto, patente valida da almeno 1 anno e una carta di credito intestata al conducente per la cauzione.",
+    a: "Carta d'identità o passaporto, patente valida da almeno 1 anno e una carta di credito o di debito (circuito Visa o Mastercard) intestata al conducente per la cauzione.",
     qEn: "What documents do I need at pick-up?",
-    aEn: "ID card or passport, a licence held for at least 1 year, and a credit card in the driver's name for the deposit.",
+    aEn: "ID card or passport, a licence held for at least 1 year, and a credit or debit card (Visa or Mastercard) in the driver's name for the deposit.",
   },
   {
     q: "Quanto è la franchigia in caso di danni?",

@@ -1,8 +1,11 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { CalendarCheck, Lock, ShieldCheck } from "lucide-react";
 
+import { useEffect } from "react";
+
 import { branches } from "@/lib/company";
 import { useI18n } from "@/lib/i18n";
+import { trackBeginCheckout, useConsent } from "@/lib/tracking";
 
 import { BookingClassTabs, RentHubEmbed } from "./renthub-embed";
 
@@ -18,10 +21,18 @@ const routeApi = getRouteApi("/prenota");
 export function PrenotaRentHubPage() {
   const { t } = useI18n();
   const search = routeApi.useSearch();
+  const { consent } = useConsent();
+  // Inizio prenotazione (con la sede, se arriva dalla pagina): misura quali campagne portano al motore RentHub.
+  useEffect(() => {
+    if (consent) trackBeginCheckout("renthub", (search as { from?: string }).from ?? null);
+  }, [consent]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const badges = [
     { icon: Lock, label: t("Connessione crittografata", "Encrypted connection") },
-    { icon: CalendarCheck, label: t("Cancellazione gratuita fino a 48h", "Free cancellation up to 48h") },
+    {
+      icon: CalendarCheck,
+      label: t("Cancellazione gratuita fino a 48h", "Free cancellation up to 48h"),
+    },
     { icon: ShieldCheck, label: t("RCA e IVA incluse", "Insurance and VAT included") },
   ];
 
@@ -41,7 +52,10 @@ export function PrenotaRentHubPage() {
           </p>
           <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
             {badges.map((badge) => (
-              <li key={badge.label} className="flex items-center gap-2 text-sm font-semibold text-ink/80">
+              <li
+                key={badge.label}
+                className="flex items-center gap-2 text-sm font-semibold text-ink/80"
+              >
                 <badge.icon className="size-4" aria-hidden />
                 {badge.label}
               </li>

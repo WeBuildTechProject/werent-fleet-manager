@@ -50,13 +50,13 @@ export const Route = createFileRoute("/")({
 const homeFaqs: (FaqEntry & { en: string })[] = [
   {
     q: "Che documenti servono per il ritiro dell'auto?",
-    a: "Carta d'identità o passaporto, patente di guida in corso di validità da almeno 1 anno e una carta di credito intestata al conducente per la pre-autorizzazione della cauzione.",
-    en: "ID card or passport, a driving licence valid for at least 1 year, and a credit card in the driver's name for the deposit pre-authorisation.",
+    a: "Carta d'identità o passaporto, patente di guida in corso di validità da almeno 1 anno e una carta di credito o di debito (circuito Visa o Mastercard) intestata al conducente per la pre-autorizzazione della cauzione.",
+    en: "ID card or passport, a driving licence valid for at least 1 year, and a credit or debit card (Visa or Mastercard) in the driver's name for the deposit pre-authorisation.",
   },
   {
-    q: "Va bene il bancomat al posto della carta di credito?",
-    a: "Per la cauzione serve una vera carta di credito (Visa o Mastercard) intestata al conducente: bancomat, carte prepagate o revolut non sono accettate per il blocco cauzionale.",
-    en: "The deposit requires an actual credit card (Visa or Mastercard) in the driver's name: debit or prepaid cards are not accepted for the deposit hold.",
+    q: "Posso usare una carta di debito?",
+    a: "Sì. Per la cauzione accettiamo carte di credito e carte di debito in tutte le sedi e per tutti i noleggi, purché intestate al conducente. Con la carta di debito l'importo della cauzione viene bloccato sul conto fino alla riconsegna del veicolo: verifica di avere la disponibilità necessaria. Non si possono usare le carte che funzionano solo sul circuito Bancomat/PagoBancomat, perché non permettono il blocco della cauzione: la carta deve essere dei circuiti Visa o Mastercard.",
+    en: "Yes. For the security deposit we accept credit and debit cards at all branches and for all rentals, as long as they are in the driver's name. With a debit card the deposit amount is held on your account until the vehicle is returned, so please make sure the funds are available. Cards that only work on the Italian Bancomat/PagoBancomat network cannot be used, as they do not allow the deposit hold: the card must be on the Visa or Mastercard network.",
   },
   {
     q: "Quanto è la franchigia in caso di danni?",
