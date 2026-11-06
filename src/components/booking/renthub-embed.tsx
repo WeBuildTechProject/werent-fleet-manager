@@ -3,6 +3,7 @@ import { Car, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useI18n } from "@/lib/i18n";
+import { attributionParams } from "@/lib/tracking";
 
 /**
  * Motore di prenotazione RentHub incorporato via iframe — stesso URL/parametri
@@ -45,10 +46,16 @@ export type RentHubParams = {
   class?: string;
 };
 
-export function buildRentHubSrc(params: RentHubParams): string {
+export function buildRentHubSrc(
+  params: RentHubParams,
+  attribution: Record<string, string> = {},
+): string {
   const search = new URLSearchParams(RENTHUB_IFRAME_PARAMS);
+  // Provenienza dall'annuncio (gclid, gbraid, wbraid, utm_*) inoltrata al motore RentHub.
+  for (const [k, v] of Object.entries(attribution)) if (!search.has(k)) search.set(k, v);
 
-  const fromCode = (params.from ? RENTHUB_LOCATION_CODE[params.from] : undefined) ?? DEFAULT_LOCATION_CODE;
+  const fromCode =
+    (params.from ? RENTHUB_LOCATION_CODE[params.from] : undefined) ?? DEFAULT_LOCATION_CODE;
   const toCode = (params.to ? RENTHUB_LOCATION_CODE[params.to] : undefined) ?? fromCode;
   search.set("from", fromCode);
   search.set("to", toCode);
@@ -109,18 +116,31 @@ type RentHubEmbedProps = {
   className?: string;
 };
 
-export function RentHubEmbed({ params = {}, compact = false, frameId = "renthub-frame", className }: RentHubEmbedProps) {
+export function RentHubEmbed({
+  params = {},
+  compact = false,
+  frameId = "renthub-frame",
+  className,
+}: RentHubEmbedProps) {
   const { t } = useI18n();
   const [loaded, setLoaded] = useState(false);
-  const src = buildRentHubSrc(params);
+  // Provenienza letta solo nel browser: l'iframe parte dopo il montaggio, già con i parametri (un solo caricamento).
+  const [attribution, setAttribution] = useState<Record<string, string> | null>(null);
+  useEffect(() => setAttribution(attributionParams()), []);
+  const src = attribution ? buildRentHubSrc(params, attribution) : undefined;
 
   useEffect(() => {
+    if (!src) return;
     let cancelled = false;
     void loadResizerScript().then(() => {
       if (cancelled) return;
-      const iFrameResize = (window as unknown as { iFrameResize?: (opts: object, selector: string) => void })
-        .iFrameResize;
-      iFrameResize?.({ checkOrigin: false, heightCalculationMethod: "lowestElement" }, `#${frameId}`);
+      const iFrameResize = (
+        window as unknown as { iFrameResize?: (opts: object, selector: string) => void }
+      ).iFrameResize;
+      iFrameResize?.(
+        { checkOrigin: false, heightCalculationMethod: "lowestElement" },
+        `#${frameId}`,
+      );
     });
     return () => {
       cancelled = true;
@@ -143,7 +163,9 @@ export function RentHubEmbed({ params = {}, compact = false, frameId = "renthub-
     <div className={`rounded-3xl bg-[#f9f9f9] ${className ?? ""}`}>
       <div className="relative overflow-hidden rounded-3xl bg-[#f9f9f9]">
         {!loaded && (
-          <div className={`absolute inset-0 flex flex-col items-center justify-center gap-3 p-10 text-center ${minHeight}`}>
+          <div
+            className={`absolute inset-0 flex flex-col items-center justify-center gap-3 p-10 text-center ${minHeight}`}
+          >
             <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             <p className="text-sm text-muted-foreground">
               {t("Caricamento disponibilità in corso…", "Loading availability…")}

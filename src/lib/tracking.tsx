@@ -8,15 +8,21 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
  *   VITE_GOOGLE_ADS_ID=AW-XXXXXXX              account Google Ads
  *   VITE_GOOGLE_ADS_PURCHASE_LABEL=xxxxxxxx    etichetta della conversione «prenotazione» (facoltativa:
  *                                              in alternativa si importa in Ads il «purchase» di GA4)
- * Senza ID nessun tag viene caricato e nessun evento inviato; il sito funziona identicamente.
+ * Se le variabili non arrivano alla build, valgono gli ID di We Rent scritti qui sotto (comunicati il 06/11/2026):
+ * sono ID pubblici, compaiono comunque nel codice della pagina. Il tag si carica su tutte le pagine con
+ * consenso predefinito NEGATO (Consent Mode v2): senza consenso Google riceve solo segnali anonimi senza cookie.
  */
-export const GA4_ID = ((import.meta.env["VITE_GA4_ID"] as string | undefined) ?? "").trim();
-export const GOOGLE_ADS_ID = (
-  (import.meta.env["VITE_GOOGLE_ADS_ID"] as string | undefined) ?? ""
-).trim();
-export const GOOGLE_ADS_PURCHASE_LABEL = (
-  (import.meta.env["VITE_GOOGLE_ADS_PURCHASE_LABEL"] as string | undefined) ?? ""
-).trim();
+const DEFAULT_GA4_ID = "G-THX7GBFP8E";
+const DEFAULT_GOOGLE_ADS_ID = "AW-11360633325";
+const DEFAULT_GOOGLE_ADS_PURCHASE_LABEL = "7kGKCPCOpbMdEO2Dlqkq";
+const envOr = (v: unknown, fallback: string) =>
+  typeof v === "string" && v.trim() ? v.trim() : fallback;
+export const GA4_ID = envOr(import.meta.env["VITE_GA4_ID"], DEFAULT_GA4_ID);
+export const GOOGLE_ADS_ID = envOr(import.meta.env["VITE_GOOGLE_ADS_ID"], DEFAULT_GOOGLE_ADS_ID);
+export const GOOGLE_ADS_PURCHASE_LABEL = envOr(
+  import.meta.env["VITE_GOOGLE_ADS_PURCHASE_LABEL"],
+  DEFAULT_GOOGLE_ADS_PURCHASE_LABEL,
+);
 const TAG_ID = GA4_ID || GOOGLE_ADS_ID;
 
 const CONSENT_KEY = "werent.consent";
@@ -106,13 +112,12 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   const [bannerOpen, setBannerOpen] = useState(false);
 
   useEffect(() => {
+    // Tag Google su tutte le pagine, con consenso predefinito negato (Consent Mode v2).
+    loadGoogleTag();
     const stored = readConsent();
     if (stored) {
       setConsent(stored);
-      if (stored.marketing || stored.analytics) {
-        loadGoogleTag();
-        applyConsent(stored);
-      }
+      applyConsent(stored);
     } else {
       setBannerOpen(true);
     }
@@ -128,12 +133,8 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
     } catch {
       /* storage non disponibile: il consenso resta valido per la sessione */
     }
-    if (next.marketing || next.analytics) {
-      loadGoogleTag();
-      applyConsent(next);
-    } else {
-      applyConsent(denied);
-    }
+    loadGoogleTag();
+    applyConsent(next.marketing || next.analytics ? next : denied);
   }, []);
 
   const reopen = useCallback(() => setBannerOpen(true), []);
@@ -147,6 +148,34 @@ export function useConsent() {
 
 /* ---------------------------------- UTM ---------------------------------- */
 
+const ATTRIBUTION_KEY = "werent.attribution";
+const CLICK_IDS = ["gclid", "gbraid", "wbraid"];
+
+function pickAttribution(search: URLSearchParams): Record<string, string> {
+  const out: Record<string, string> = {};
+  search.forEach((v, k) => {
+    if (v && (CLICK_IDS.includes(k) || k.startsWith("utm_"))) out[k] = v.slice(0, 500);
+  });
+  return out;
+}
+
+/**
+ * Parametri di provenienza dell'annuncio da inoltrare al motore RentHub: gclid, gbraid, wbraid e utm_*.
+ * Quelli nell'URL della pagina; se mancano (atterraggio su una landing, poi /prenota), quelli salvati
+ * all'atterraggio nella stessa sessione.
+ */
+export function attributionParams(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const fromUrl = pickAttribution(new URLSearchParams(window.location.search));
+  if (Object.keys(fromUrl).length) return fromUrl;
+  try {
+    const raw = window.sessionStorage.getItem(ATTRIBUTION_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
+
 export type Utm = {
   utm_source?: string | undefined;
   utm_medium?: string | undefined;
@@ -156,6 +185,14 @@ export type Utm = {
 /** Salva le UTM di atterraggio così da poterle attaccare alla prenotazione. */
 export function captureUtm() {
   if (typeof window === "undefined") return;
+  const attribution = pickAttribution(new URLSearchParams(window.location.search));
+  if (Object.keys(attribution).length) {
+    try {
+      window.sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attribution));
+    } catch {
+      /* ignora */
+    }
+  }
   const params = new URLSearchParams(window.location.search);
   const found: Utm = {
     utm_source: params.get("utm_source") ?? undefined,
@@ -228,6 +265,10 @@ function listenForContactsAndRentHub() {
               return String(e.data);
             }
           })();
+    // Prenotazione conclusa nel motore RentHub:
+    // { type: "werent_booking_completed", reservationCode, value, currency } (oggetto o stringa JSON).
+    const booking = parseBookingCompleted(e.data);
+    if (booking) trackBookingConversion({ ...booking, consent: readConsent() });
     const w = window as unknown as { dataLayer?: unknown[]; __renthubMessages?: string[] };
     w.__renthubMessages = [...(w.__renthubMessages ?? []), data.slice(0, 500)].slice(-50);
     w.dataLayer = w.dataLayer ?? [];
@@ -239,6 +280,34 @@ function listenForContactsAndRentHub() {
     document.removeEventListener("click", onClick, true);
     window.removeEventListener("message", onMessage);
   };
+}
+
+/** Messaggio «werent_booking_completed» → codice, valore e valuta della prenotazione; null se non lo è. */
+export function parseBookingCompleted(
+  raw: unknown,
+): { reservationCode: string; value: number; currency: string } | null {
+  let d: unknown = raw;
+  if (typeof d === "string") {
+    try {
+      d = JSON.parse(d);
+    } catch {
+      return null;
+    }
+  }
+  if (!d || typeof d !== "object") return null;
+  const o = d as Record<string, unknown>;
+  if (o["type"] !== "werent_booking_completed") return null;
+  const reservationCode = String(o["reservationCode"] ?? "")
+    .trim()
+    .slice(0, 100);
+  const value =
+    typeof o["value"] === "number"
+      ? o["value"]
+      : Number(String(o["value"] ?? "").replace(",", "."));
+  if (!reservationCode || !Number.isFinite(value)) return null;
+  const c = o["currency"];
+  const currency = typeof c === "string" && /^[A-Za-z]{3}$/.test(c) ? c.toUpperCase() : "EUR";
+  return { reservationCode, value, currency };
 }
 
 /** Inizio prenotazione: apertura del motore (RentHub o nativo), con la sede se scelta. */
@@ -254,31 +323,48 @@ export function trackBeginCheckout(engine: "renthub" | "werent", branch?: string
 
 const firedConversions = new Set<string>();
 
+const FIRED_KEY = "werent.conversions";
+
+/** Deduplica per codice prenotazione, anche se la pagina viene ricaricata nella stessa sessione. */
+function alreadyFired(code: string): boolean {
+  if (firedConversions.has(code)) return true;
+  firedConversions.add(code);
+  try {
+    const list = JSON.parse(window.sessionStorage.getItem(FIRED_KEY) ?? "[]") as string[];
+    if (list.includes(code)) return true;
+    window.sessionStorage.setItem(FIRED_KEY, JSON.stringify([...list, code].slice(-50)));
+  } catch {
+    /* storage non disponibile: resta la deduplica in memoria */
+  }
+  return false;
+}
+
 /**
- * Conversione Google Ads: inviata SOLO su pagamento realmente riuscito
- * (mai sulla semplice creazione della bozza) e solo con consenso marketing.
+ * Prenotazione conclusa: «purchase» a GA4 e «conversion» a Google Ads, una sola volta per codice.
+ * Inviata SOLO su prenotazione realmente conclusa (mai sulla semplice bozza). Anche senza consenso
+ * marketing: con Consent Mode v2 (default «denied») Google riceve un segnale anonimo per la modellazione.
  */
 export function trackBookingConversion(input: {
   reservationCode: string;
   value: number;
+  currency?: string;
   consent: Consent | null;
 }) {
   if (!tagLoaded) return;
-  if (firedConversions.has(input.reservationCode)) return;
-  firedConversions.add(input.reservationCode);
+  if (alreadyFired(input.reservationCode)) return;
+  const currency = input.currency ?? "EUR";
   // GA4: «purchase» con valore e codice (da importare in Google Ads come conversione).
   if (GA4_ID)
     gtag("event", "purchase", {
       transaction_id: input.reservationCode,
       value: input.value,
-      currency: "EUR",
+      currency,
     });
-  // Google Ads diretto: solo con l'etichetta della conversione e il consenso marketing.
-  if (GOOGLE_ADS_ID && GOOGLE_ADS_PURCHASE_LABEL && input.consent?.marketing) {
+  if (GOOGLE_ADS_ID && GOOGLE_ADS_PURCHASE_LABEL) {
     gtag("event", "conversion", {
       send_to: `${GOOGLE_ADS_ID}/${GOOGLE_ADS_PURCHASE_LABEL}`,
       value: input.value,
-      currency: "EUR",
+      currency,
       transaction_id: input.reservationCode,
     });
   }
