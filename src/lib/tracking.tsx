@@ -34,16 +34,25 @@ const denied: Consent = { necessary: true, analytics: false, marketing: false };
 
 type Gtag = (...args: unknown[]) => void;
 
-function dataLayerPush(...args: unknown[]) {
-  const w = window as unknown as { dataLayer?: unknown[] };
-  w.dataLayer = w.dataLayer ?? [];
-  w.dataLayer.push(args);
+/**
+ * gtag ufficiale di Google: nel dataLayer va spinto l'oggetto `arguments`, NON un array
+ * (gtag.js ignora gli array: config ed event non partirebbero). Per questo è una function
+ * classica e non una arrow function, che non ha `arguments`.
+ */
+function ensureGtag(): Gtag {
+  const w = window as unknown as { dataLayer?: unknown[]; gtag?: Gtag };
+  w.dataLayer = w.dataLayer || [];
+  if (!w.gtag) {
+    w.gtag = function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      w.dataLayer!.push(arguments);
+    } as Gtag;
+  }
+  return w.gtag;
 }
 
 function gtag(...args: unknown[]) {
-  const w = window as unknown as { gtag?: Gtag };
-  if (w.gtag) w.gtag(...args);
-  else dataLayerPush(...args);
+  ensureGtag()(...args);
 }
 
 export function readConsent(): Consent | null {
@@ -73,10 +82,7 @@ function loadGoogleTag() {
   if (tagLoaded || !TAG_ID || typeof document === "undefined") return;
   tagLoaded = true;
   const w = window as unknown as { dataLayer?: unknown[]; gtag?: Gtag };
-  w.dataLayer = w.dataLayer ?? [];
-  w.gtag = function gtagShim(...args: unknown[]) {
-    w.dataLayer!.push(args);
-  };
+  w.gtag = ensureGtag();
   w.gtag("js", new Date());
   w.gtag("consent", "default", {
     ad_storage: "denied",
